@@ -16,7 +16,7 @@ BITS = 32
    # Name of compiler to use and flags to use.
 FC      = gfortran
 
-FFLAGS  = -O2 -m$(BITS) -fbacktrace -ffree-line-length-none -x f95-cpp-input -C
+FFLAGS  = -O2 -m$(BITS) -fbacktrace -ffree-line-length-none -x f95-cpp-input -C -DNO_LibLoad -DMESH_DEBUG
 LDFLAGS = -O2 -m$(BITS) -fbacktrace -g -fno-inline
 # some useful gfortran options:
 #  -DFPE_TRAP_ENABLED
@@ -51,7 +51,7 @@ else
       SoftwareDir       = /Users/aplatt/software-development/windsvn
       RegistryProgram   = $(SoftwareDir)/FAST/branches/FAST_Registry/registry.exe
       NWTC_Lib_DIR      = $(SoftwareDir)/NWTC_Library/trunk/source/
-      Orca_DIR           = /Users/aplatt/software-development/wind-dev/aplatt/programming/OrcaFlexInterface/Source
+      Orca_DIR           = /Users/aplatt/software-development/wind-dev/OrcaFlexInterface/trunk/Source
 		NETLIB_DIR 			:= \
 			$(SoftwareDir)/NWTC_Library/branches/NetLib/NWTC_Source/                    	\
 			$(SoftwareDir)/NWTC_Library/branches/NetLib/scalapack/scalapack-2.0.2/SRC/    \

@@ -1,6 +1,6 @@
 #  Header line
-#  Translation        Rotation            Translate Velocity    Rotational Velocity
-#TDxi  TDyi  TDzi   RDxi   RDyi   RDzi    TVxi   TVyi   TVzi    RVxi    RVyi    RVzi
-# (m)   (m)   (m)   (deg)  (deg)  (deg)   (m/s)  (m/s)  (m/s)  (deg/s) (deg/s) (deg/s)
-0,      1.5,   1,    0,     0,     0,      0,     0,     0,      0,      0,      0
--1.5,   1.5,  .5,    0,     0,     0,      0,     0,     0,      0,      0,      0
+#  Translation        Rotation            Translate Velocity    Rotational Velocity          Translate Accel          Rotational Accel
+#TDxi  TDyi  TDzi   RDxi   RDyi   RDzi    TVxi   TVyi   TVzi    RVxi    RVyi    RVzi      TAxi    TAyi    TAzi     RAxi      RAyi      RAzi
+# (m)   (m)   (m)   (deg)  (deg)  (deg)   (m/s)  (m/s)  (m/s)  (deg/s) (deg/s) (deg/s)   (m/s^2) (m/s^2) (m/s^2)  (deg/s^2) (deg/s^2) (deg/s^2)
+#-1.5,   1.5,  .5,    0,     0,     0,      0,     0,     0,      0,      0,      0,         0,      0,      0,      0,        0,        0
+0,      1.5,   1,    0,     0,     0,      0,     0,     0,      0,      0,      0,         0,      0,      0,      0,        0,        0

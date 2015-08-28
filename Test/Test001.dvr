@@ -7,8 +7,9 @@ OrcaFlexWrapper driver input file.  V1.00
 ----  Coordinates  -----------------------------------------------------------
    t           PtfmCoords        -- We are specifying the platform coordinates
    t           Degrees           -- Rotations specified in degrees and degrees/sec (radians otherwise)
- 1,0,0,0,5,0   PtfmCoord         -- X,Y,Z,R1,R2,R3 coordinate and rotation (m, degrees)
- 0,0,0,0,0,0   PtfmVeloc         -- Velocity (derivative of PtfmCoord)  (m/s, degrees/sec)
+ 1,0,0,0,5,0   PtfmCoord         -- X,Y,Z,R1,R2,R3 coordinate and rotation       (m,      degrees)
+ 0,0,0,0,0,0   PtfmVeloc         -- Velocity (time derivative of PtfmCoord)      (m/s,    degrees/sec)
+ 0,0,0,0,0,0   PtfmAccel         -- Accelity (2nd time derivative of PtfmCoord)  (m/s^2,  degrees/sec^2)
    t           AddedMass         -- Write the added mass matrix to the screen
    t           AddedMassFile     -- Write the added mass matrix to a file (.am)
 ----  Points file input (output given as POINTSFILENAME.Velocity.EXT)  -------
