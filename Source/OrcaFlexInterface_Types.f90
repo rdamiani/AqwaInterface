@@ -35,16 +35,10 @@ USE NWTC_Library
 IMPLICIT NONE
 ! =========  Orca_InitInputType  =======
   TYPE, PUBLIC :: Orca_InitInputType
-    CHARACTER(1024)  :: DirRoot      ! Directory and rootname of file [-]
-    CHARACTER(1024)  :: DLLPathName      ! Path to where the DLL will be stored [-]
+    CHARACTER(1024)  :: DirRoot      ! Directory and rootname of simulation input file [-]
+    CHARACTER(1024)  :: DLLPathFileName      ! Path and filename to where the DLL will be stored [-]
     REAL(ReKi)  :: DT      ! Time Stepsize [seconds]
     REAL(ReKi)  :: TMax      ! Maximum Time [seconds]
-    LOGICAL  :: PtfmSgF      ! Calculate surge force [-]
-    LOGICAL  :: PtfmSwF      ! Calculate sway force [-]
-    LOGICAL  :: PtfmHvF      ! Calculate heave force [-]
-    LOGICAL  :: PtfmRF      ! Calculate roll force [-]
-    LOGICAL  :: PtfmPF      ! Calculate pitch force [-]
-    LOGICAL  :: PtfmYF      ! Calculate yaw force [-]
   END TYPE Orca_InitInputType
 ! =======================
 ! =========  Orca_InitOutputType  =======
@@ -76,7 +70,6 @@ IMPLICIT NONE
     TYPE(DLL_Type)  :: DLL_Orca      ! Info for the OrcaFlex DLL [-]
     CHARACTER(1024)  :: SimNamePath      ! Path with simulation rootname with null end character for passing to C [-]
     INTEGER(IntKi)  :: SimNamePathLen      ! Length of SimNamePath (including null char) [-]
-    LOGICAL , DIMENSION(1:6)  :: PtfmDOF      ! Degrees of freedom enabled [-]
   END TYPE Orca_ParameterType
 ! =======================
 ! =========  Orca_InputType  =======
@@ -123,15 +116,9 @@ CONTAINS
    ErrStat = ErrID_None
    ErrMsg  = ""
     DstInitInputData%DirRoot = SrcInitInputData%DirRoot
-    DstInitInputData%DLLPathName = SrcInitInputData%DLLPathName
+    DstInitInputData%DLLPathFileName = SrcInitInputData%DLLPathFileName
     DstInitInputData%DT = SrcInitInputData%DT
     DstInitInputData%TMax = SrcInitInputData%TMax
-    DstInitInputData%PtfmSgF = SrcInitInputData%PtfmSgF
-    DstInitInputData%PtfmSwF = SrcInitInputData%PtfmSwF
-    DstInitInputData%PtfmHvF = SrcInitInputData%PtfmHvF
-    DstInitInputData%PtfmRF = SrcInitInputData%PtfmRF
-    DstInitInputData%PtfmPF = SrcInitInputData%PtfmPF
-    DstInitInputData%PtfmYF = SrcInitInputData%PtfmYF
  END SUBROUTINE Orca_CopyInitInput
 
  SUBROUTINE Orca_DestroyInitInput( InitInputData, ErrStat, ErrMsg )
@@ -181,15 +168,9 @@ CONTAINS
   Db_BufSz  = 0
   Int_BufSz  = 0
       Int_BufSz  = Int_BufSz  + 1*LEN(InData%DirRoot)  ! DirRoot
-      Int_BufSz  = Int_BufSz  + 1*LEN(InData%DLLPathName)  ! DLLPathName
+      Int_BufSz  = Int_BufSz  + 1*LEN(InData%DLLPathFileName)  ! DLLPathFileName
       Re_BufSz   = Re_BufSz   + 1  ! DT
       Re_BufSz   = Re_BufSz   + 1  ! TMax
-      Int_BufSz  = Int_BufSz  + 1  ! PtfmSgF
-      Int_BufSz  = Int_BufSz  + 1  ! PtfmSwF
-      Int_BufSz  = Int_BufSz  + 1  ! PtfmHvF
-      Int_BufSz  = Int_BufSz  + 1  ! PtfmRF
-      Int_BufSz  = Int_BufSz  + 1  ! PtfmPF
-      Int_BufSz  = Int_BufSz  + 1  ! PtfmYF
   IF ( Re_BufSz  .GT. 0 ) THEN 
      ALLOCATE( ReKiBuf(  Re_BufSz  ), STAT=ErrStat2 )
      IF (ErrStat2 /= 0) THEN 
@@ -221,26 +202,14 @@ CONTAINS
           IntKiBuf(Int_Xferred) = ICHAR(InData%DirRoot(I:I), IntKi)
           Int_Xferred = Int_Xferred   + 1
         END DO ! I
-        DO I = 1, LEN(InData%DLLPathName)
-          IntKiBuf(Int_Xferred) = ICHAR(InData%DLLPathName(I:I), IntKi)
+        DO I = 1, LEN(InData%DLLPathFileName)
+          IntKiBuf(Int_Xferred) = ICHAR(InData%DLLPathFileName(I:I), IntKi)
           Int_Xferred = Int_Xferred   + 1
         END DO ! I
       ReKiBuf ( Re_Xferred:Re_Xferred+(1)-1 ) = InData%DT
       Re_Xferred   = Re_Xferred   + 1
       ReKiBuf ( Re_Xferred:Re_Xferred+(1)-1 ) = InData%TMax
       Re_Xferred   = Re_Xferred   + 1
-      IntKiBuf ( Int_Xferred:Int_Xferred+1-1 ) = TRANSFER( InData%PtfmSgF , IntKiBuf(1), 1)
-      Int_Xferred   = Int_Xferred   + 1
-      IntKiBuf ( Int_Xferred:Int_Xferred+1-1 ) = TRANSFER( InData%PtfmSwF , IntKiBuf(1), 1)
-      Int_Xferred   = Int_Xferred   + 1
-      IntKiBuf ( Int_Xferred:Int_Xferred+1-1 ) = TRANSFER( InData%PtfmHvF , IntKiBuf(1), 1)
-      Int_Xferred   = Int_Xferred   + 1
-      IntKiBuf ( Int_Xferred:Int_Xferred+1-1 ) = TRANSFER( InData%PtfmRF , IntKiBuf(1), 1)
-      Int_Xferred   = Int_Xferred   + 1
-      IntKiBuf ( Int_Xferred:Int_Xferred+1-1 ) = TRANSFER( InData%PtfmPF , IntKiBuf(1), 1)
-      Int_Xferred   = Int_Xferred   + 1
-      IntKiBuf ( Int_Xferred:Int_Xferred+1-1 ) = TRANSFER( InData%PtfmYF , IntKiBuf(1), 1)
-      Int_Xferred   = Int_Xferred   + 1
  END SUBROUTINE Orca_PackInitInput
 
  SUBROUTINE Orca_UnPackInitInput( ReKiBuf, DbKiBuf, IntKiBuf, Outdata, ErrStat, ErrMsg )
@@ -281,26 +250,14 @@ CONTAINS
         OutData%DirRoot(I:I) = CHAR(IntKiBuf(Int_Xferred))
         Int_Xferred = Int_Xferred   + 1
       END DO ! I
-      DO I = 1, LEN(OutData%DLLPathName)
-        OutData%DLLPathName(I:I) = CHAR(IntKiBuf(Int_Xferred))
+      DO I = 1, LEN(OutData%DLLPathFileName)
+        OutData%DLLPathFileName(I:I) = CHAR(IntKiBuf(Int_Xferred))
         Int_Xferred = Int_Xferred   + 1
       END DO ! I
       OutData%DT = ReKiBuf( Re_Xferred )
       Re_Xferred   = Re_Xferred + 1
       OutData%TMax = ReKiBuf( Re_Xferred )
       Re_Xferred   = Re_Xferred + 1
-      OutData%PtfmSgF = TRANSFER( IntKiBuf( Int_Xferred ), mask0 )
-      Int_Xferred   = Int_Xferred + 1
-      OutData%PtfmSwF = TRANSFER( IntKiBuf( Int_Xferred ), mask0 )
-      Int_Xferred   = Int_Xferred + 1
-      OutData%PtfmHvF = TRANSFER( IntKiBuf( Int_Xferred ), mask0 )
-      Int_Xferred   = Int_Xferred + 1
-      OutData%PtfmRF = TRANSFER( IntKiBuf( Int_Xferred ), mask0 )
-      Int_Xferred   = Int_Xferred + 1
-      OutData%PtfmPF = TRANSFER( IntKiBuf( Int_Xferred ), mask0 )
-      Int_Xferred   = Int_Xferred + 1
-      OutData%PtfmYF = TRANSFER( IntKiBuf( Int_Xferred ), mask0 )
-      Int_Xferred   = Int_Xferred + 1
  END SUBROUTINE Orca_UnPackInitInput
 
  SUBROUTINE Orca_CopyInitOutput( SrcInitOutputData, DstInitOutputData, CtrlCode, ErrStat, ErrMsg )
@@ -1003,7 +960,6 @@ ENDIF
    CHARACTER(*),    INTENT(  OUT) :: ErrMsg
 ! Local 
    INTEGER(IntKi)                 :: i,j,k
-   INTEGER(IntKi)                 :: i1, i1_l, i1_u  !  bounds (upper/lower) for an array dimension 1
    INTEGER(IntKi)                 :: ErrStat2
    CHARACTER(1024)                :: ErrMsg2
    CHARACTER(*), PARAMETER        :: RoutineName = 'Orca_CopyParam'
@@ -1014,7 +970,6 @@ ENDIF
       DstParamData%DLL_Orca = SrcParamData%DLL_Orca
     DstParamData%SimNamePath = SrcParamData%SimNamePath
     DstParamData%SimNamePathLen = SrcParamData%SimNamePathLen
-    DstParamData%PtfmDOF = SrcParamData%PtfmDOF
  END SUBROUTINE Orca_CopyParam
 
  SUBROUTINE Orca_DestroyParam( ParamData, ErrStat, ErrMsg )
@@ -1085,7 +1040,6 @@ ENDIF
       END IF
       Int_BufSz  = Int_BufSz  + 1*LEN(InData%SimNamePath)  ! SimNamePath
       Int_BufSz  = Int_BufSz  + 1  ! SimNamePathLen
-      Int_BufSz  = Int_BufSz  + SIZE(InData%PtfmDOF)  ! PtfmDOF
   IF ( Re_BufSz  .GT. 0 ) THEN 
      ALLOCATE( ReKiBuf(  Re_BufSz  ), STAT=ErrStat2 )
      IF (ErrStat2 /= 0) THEN 
@@ -1149,8 +1103,6 @@ ENDIF
         END DO ! I
       IntKiBuf ( Int_Xferred:Int_Xferred+(1)-1 ) = InData%SimNamePathLen
       Int_Xferred   = Int_Xferred   + 1
-      IntKiBuf ( Int_Xferred:Int_Xferred+SIZE(InData%PtfmDOF)-1 ) = TRANSFER(PACK( InData%PtfmDOF ,.TRUE.), IntKiBuf(1), SIZE(InData%PtfmDOF))
-      Int_Xferred   = Int_Xferred   + SIZE(InData%PtfmDOF)
  END SUBROUTINE Orca_PackParam
 
  SUBROUTINE Orca_UnPackParam( ReKiBuf, DbKiBuf, IntKiBuf, Outdata, ErrStat, ErrMsg )
@@ -1172,7 +1124,6 @@ ENDIF
   LOGICAL, ALLOCATABLE           :: mask3(:,:,:)
   LOGICAL, ALLOCATABLE           :: mask4(:,:,:,:)
   LOGICAL, ALLOCATABLE           :: mask5(:,:,:,:,:)
-  INTEGER(IntKi)                 :: i1, i1_l, i1_u  !  bounds (upper/lower) for an array dimension 1
   INTEGER(IntKi)                 :: ErrStat2
   CHARACTER(1024)                :: ErrMsg2
   CHARACTER(*), PARAMETER        :: RoutineName = 'Orca_UnPackParam'
@@ -1234,17 +1185,6 @@ ENDIF
       END DO ! I
       OutData%SimNamePathLen = IntKiBuf( Int_Xferred ) 
       Int_Xferred   = Int_Xferred + 1
-    i1_l = LBOUND(OutData%PtfmDOF,1)
-    i1_u = UBOUND(OutData%PtfmDOF,1)
-    ALLOCATE(mask1(i1_l:i1_u),STAT=ErrStat2)
-    IF (ErrStat2 /= 0) THEN 
-       CALL SetErrStat(ErrID_Fatal, 'Error allocating mask1.', ErrStat, ErrMsg,RoutineName)
-       RETURN
-    END IF
-    mask1 = .TRUE. 
-      OutData%PtfmDOF = UNPACK( TRANSFER( IntKiBuf ( Int_Xferred:Int_Xferred+(SIZE(OutData%PtfmDOF))-1 ), OutData%PtfmDOF), mask1,.TRUE.)
-      Int_Xferred   = Int_Xferred   + SIZE(OutData%PtfmDOF)
-    DEALLOCATE(mask1)
  END SUBROUTINE Orca_UnPackParam
 
  SUBROUTINE Orca_CopyInput( SrcInputData, DstInputData, CtrlCode, ErrStat, ErrMsg )

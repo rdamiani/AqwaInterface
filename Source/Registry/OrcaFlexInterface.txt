@@ -18,16 +18,10 @@ include   Registry_NWTC_Library.txt
 
 # ..... Initialization data .......................................................................................................
 # Define inputs that the initialization routine may need here:
-typedef   OrcaFlexInterface/Orca   InitInputType   CHARACTER(1024)   DirRoot      -   -   -   "Directory and rootname of file" -
-typedef  ^  ^                 CHARACTER(1024)   DLLPathName          -  -  -     "Path to where the DLL will be stored" -
+typedef   OrcaFlexInterface/Orca   InitInputType   CHARACTER(1024)   DirRoot      -   -   -   "Directory and rootname of simulation input file" -
+typedef  ^  ^                 CHARACTER(1024)   DLLPathFileName      -  -  -     "Path and filename to where the DLL will be stored" -
 typedef  ^  ^                 ReKi              DT                   -  -  -     "Time Stepsize"         seconds
 typedef  ^  ^                 ReKi              TMax                 -  -  -     "Maximum Time"          seconds
-typedef  ^  ^                 LOGICAL           PtfmSgF              -  -  -     "Calculate surge force" -
-typedef  ^  ^                 LOGICAL           PtfmSwF              -  -  -     "Calculate sway force"  -
-typedef  ^  ^                 LOGICAL           PtfmHvF              -  -  -     "Calculate heave force" -
-typedef  ^  ^                 LOGICAL           PtfmRF               -  -  -     "Calculate roll force"  -
-typedef  ^  ^                 LOGICAL           PtfmPF               -  -  -     "Calculate pitch force" -
-typedef  ^  ^                 LOGICAL           PtfmYF               -  -  -     "Calculate yaw force"   -
 
 # Define outputs from the initialization routine here:
 typedef   ^   InitOutputType ProgDesc   Ver   -   -   -   "This module's name, version, and date"   -
@@ -54,7 +48,6 @@ typedef  ^  ParameterType     DbKi              DT                   -  -  -    
 typedef  ^  ^                 DLL_Type          DLL_Orca             -  -  -     "Info for the OrcaFlex DLL"                                                -
 typedef  ^  ^                 CHARACTER(1024)   SimNamePath          -  -  -     "Path with simulation rootname with null end character for passing to C"   -
 typedef  ^  ^                 IntKi             SimNamePathLen       -  -  -     "Length of SimNamePath (including null char)"                              -
-typedef  ^  ^                 LOGICAL           PtfmDOF              {6} - -     "Degrees of freedom enabled"                                               -
 
 # ..... Inputs ....................................................................................................................
 # Define inputs that are contained on the mesh here:
