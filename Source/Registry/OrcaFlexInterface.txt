@@ -42,12 +42,15 @@ typedef  ^  OtherStateType    ReKi              PtfmAM               {6}{6} - - 
 typedef  ^  ^                 ReKi              PtfmFt               {6}    - -  "Force/moment results from OrcaFlex"         -
 typedef  ^  ^                 ReKi              F_PtfmAM             {6}   -  -  "Force/moment results calculated from the added mass and accel"   -
 typedef  ^  ^                 LOGICAL           Initialized          -  -  -     "Is the module initialized?"                 -
+typedef  ^  ^                 ReKi              AllOuts              :  -  -     "An array holding the value of all of the calculated (not only selected) output channels" "see OutListParameters.xlsx spreadsheet"
 
 # Time step for integration of continuous states (if a fixed-step integrator is used) and update of discrete states:
 typedef  ^  ParameterType     DbKi              DT                   -  -  -     "Time step for continuous state integration & discrete state update"       seconds
 typedef  ^  ^                 DLL_Type          DLL_Orca             -  -  -     "Info for the OrcaFlex DLL"                                                -
 typedef  ^  ^                 CHARACTER(1024)   SimNamePath          -  -  -     "Path with simulation rootname with null end character for passing to C"   -
 typedef  ^  ^                 IntKi             SimNamePathLen       -  -  -     "Length of SimNamePath (including null char)"                              -
+typedef  ^  ^                 IntKi             NumOuts              -  0  -     "Number of parameters in the output list (number of outputs requested)"    -
+typedef  ^  ^                 OutParmType       OutParam            {:} -  -     "Names and units (and other characteristics) of all requested output parameters"    -
 
 # ..... Inputs ....................................................................................................................
 # Define inputs that are contained on the mesh here:
@@ -56,9 +59,8 @@ typedef  ^  InputType         MeshType          PtfmMesh             -  -  -  "D
 # ..... Outputs ...................................................................................................................
 # Define outputs that are contained on the mesh here:
 typedef  ^  OutputType        MeshType          PtfmMesh             -  -  -  "Loads at the platform reference point"         -
+typedef  ^  OutputType        ReKi              WriteOutput          :  -  -  "Array with values to output to file"           -
 
-# Define outputs that are not on this mesh here:
-typedef  ^  OutputType           ReKi  WriteOutput       {:} - -  "Data to be written to an output file: see WriteOutputHdr for names of each variable"   -
 
 
 typedef  ^  ContinuousStateType  ReKi  Dummy             -  -  -  "Dummy placeholder" -
