@@ -47,28 +47,29 @@
 	<Files>
 		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
 		<Filter Name="Library">
-		<Filter Name="RegistryFiles">
-		<File RelativePath="..\..\..\..\..\..\windsvn\NWTC_Library\trunk\source\Registry_NWTC_Library.txt"/></Filter>
-		<File RelativePath="..\..\..\..\..\..\windsvn\NWTC_Library\trunk\source\ModMesh.f90"/>
-		<File RelativePath="..\..\..\..\..\..\windsvn\NWTC_Library\trunk\source\ModMesh_Mapping.f90"/>
-		<File RelativePath="..\..\..\..\..\..\windsvn\NWTC_Library\trunk\source\ModMesh_Types.f90"/>
-		<File RelativePath="..\..\..\..\..\..\windsvn\NWTC_Library\trunk\source\NWTC_Base.f90"/>
-		<File RelativePath="..\..\..\..\..\..\windsvn\NWTC_Library\trunk\source\NWTC_IO.f90"/>
-		<File RelativePath="..\..\..\..\..\..\windsvn\NWTC_Library\trunk\source\dependencies\lapack\NWTC_LAPACK.f90"/>
-		<File RelativePath="..\..\..\..\..\..\windsvn\NWTC_Library\trunk\source\NWTC_Library.f90"/>
-		<File RelativePath="..\..\..\..\..\..\windsvn\NWTC_Library\trunk\source\NWTC_Library_Types.f90"/>
-		<File RelativePath="..\..\..\..\..\..\windsvn\NWTC_Library\trunk\source\NWTC_Num.f90"/>
-		<File RelativePath="..\..\..\..\..\..\windsvn\NWTC_Library\trunk\source\SingPrec.f90"/>
-		<File RelativePath="..\..\..\..\..\..\windsvn\NWTC_Library\trunk\source\SysIVF.f90"/></Filter>
+		<Filter Name="dependencies">
+		<File RelativePath="..\..\..\..\..\windsvn\NWTC_Library\trunk\source\dependencies\lapack\NWTC_LAPACK.f90"/></Filter>
+		<File RelativePath="..\..\..\..\..\windsvn\NWTC_Library\trunk\source\ModMesh.f90"/>
+		<File RelativePath="..\..\..\..\..\windsvn\NWTC_Library\trunk\source\ModMesh_Mapping.f90"/>
+		<File RelativePath="..\..\..\..\..\windsvn\NWTC_Library\trunk\source\ModMesh_Types.f90"/>
+		<File RelativePath="..\..\..\..\..\windsvn\NWTC_Library\trunk\source\NWTC_Base.f90">
+			<FileConfiguration Name="Debug|Win32">
+				<Tool Name="VFFortranCompilerTool" Optimization="optimizeMaxSpeed"/></FileConfiguration></File>
+		<File RelativePath="..\..\..\..\..\windsvn\NWTC_Library\trunk\source\NWTC_IO.f90"/>
+		<File RelativePath="..\..\..\..\..\windsvn\NWTC_Library\trunk\source\NWTC_Library.f90"/>
+		<File RelativePath="..\..\..\..\..\windsvn\NWTC_Library\trunk\source\NWTC_Library_Types.f90"/>
+		<File RelativePath="..\..\..\..\..\windsvn\NWTC_Library\trunk\source\NWTC_Num.f90"/>
+		<File RelativePath="..\..\..\..\..\windsvn\NWTC_Library\trunk\source\SingPrec.f90"/>
+		<File RelativePath="..\..\..\..\..\windsvn\NWTC_Library\trunk\source\SysIVF.f90"/></Filter>
 		<Filter Name="OrcaFlex">
 		<Filter Name="RegistryFiles">
 		<File RelativePath="..\..\Source\Registry\OrcaFlexInterface.txt">
 			<FileConfiguration Name="Debug|Win32">
 				<Tool Name="VFCustomBuildTool" CommandLine="CALL RunRegistry.bat OrcaFlexInterface" Description="Running Registry for OrcaFlexInterface" Outputs="..\..\Source\OrcaFlexInterface_Types.f90"/></FileConfiguration>
 			<FileConfiguration Name="Debug|x64">
-				<Tool Name="VFCustomBuildTool" CommandLine="CALL RunRegistry.bat OrcaFlexInterface" Description="Running Registry for OrcaFlexInterface" Outputs="..\..\Source\OrcaFlexInterface_Types.f90"/></FileConfiguration></File>
+				<Tool Name="VFCustomBuildTool" CommandLine="CALL RunRegistry.bat OrcaFlexInterface" Description="Running Registry for OrcaFlexInterface" Outputs="..\..\Source\OrcaFlexInterface_Types.f90"/></FileConfiguration></File></Filter>
+		<File RelativePath="..\..\Source\OrcaFlexInterface.f90"/>
 		<File RelativePath="..\..\Source\OrcaFlexInterface_Types.f90"/></Filter>
-		<File RelativePath="..\..\Source\OrcaFlexInterface.f90"/></Filter>
 		<Filter Name="OrcaFlexDriver">
 		<File RelativePath="..\..\Source\Driver\OrcaDriver.f90"/>
 		<File RelativePath="..\..\Source\Driver\OrcaDriver_Subs.f90"/>
