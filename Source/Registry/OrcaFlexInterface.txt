@@ -18,10 +18,9 @@ include   Registry_NWTC_Library.txt
 
 # ..... Initialization data .......................................................................................................
 # Define inputs that the initialization routine may need here:
-typedef   OrcaFlexInterface/Orca   InitInputType   CHARACTER(1024)   DirRoot      -   -   -   "Directory and rootname of simulation input file" -
-typedef  ^  ^                 CHARACTER(1024)   DLLPathFileName      -  -  -     "Path and filename to where the DLL will be stored" -
-typedef  ^  ^                 ReKi              DT                   -  -  -     "Time Stepsize"         seconds
-typedef  ^  ^                 ReKi              TMax                 -  -  -     "Maximum Time"          seconds
+typedef  OrcaFlexInterface/Orca  InitInputType  CHARACTER(1024) InputFile       - - - "Name of the input file; remove if there is no file" -
+typedef  ^                       ^              CHARACTER(1024) RootName        - - - "RootName for writing output files (echo file)" -
+typedef  ^                       ^              ReKi            TMax            - - - "Maximum Time"          seconds
 
 # Define outputs from the initialization routine here:
 typedef   ^   InitOutputType ProgDesc   Ver   -   -   -   "This module's name, version, and date"   -
@@ -34,6 +33,7 @@ typedef   ^   Orca_InputFile  CHARACTER(1024)   DLL_FileName         -  -  -    
 typedef   ^   ^               CHARACTER(1024)   DLL_InitProcName     -  -  -     "Name of the DLL procedure to call during initialisation"   -
 typedef   ^   ^               CHARACTER(1024)   DLL_CalcProcName     -  -  -     "Name of the DLL procedure to call during CalcOutput"       -
 typedef   ^   ^               CHARACTER(1024)   DLL_EndProcName      -  -  -     "Name of the DLL procedure to call during End"              -
+typedef   ^   ^               CHARACTER(1024)   DirRoot              -  -  -     "Directory and rootname of simulation input file" -
 
 
 

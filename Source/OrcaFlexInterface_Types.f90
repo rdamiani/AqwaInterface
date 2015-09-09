@@ -35,9 +35,8 @@ USE NWTC_Library
 IMPLICIT NONE
 ! =========  Orca_InitInputType  =======
   TYPE, PUBLIC :: Orca_InitInputType
-    CHARACTER(1024)  :: DirRoot      ! Directory and rootname of simulation input file [-]
-    CHARACTER(1024)  :: DLLPathFileName      ! Path and filename to where the DLL will be stored [-]
-    REAL(ReKi)  :: DT      ! Time Stepsize [seconds]
+    CHARACTER(1024)  :: InputFile      ! Name of the input file; remove if there is no file [-]
+    CHARACTER(1024)  :: RootName      ! RootName for writing output files (echo file) [-]
     REAL(ReKi)  :: TMax      ! Maximum Time [seconds]
   END TYPE Orca_InitInputType
 ! =======================
@@ -54,6 +53,7 @@ IMPLICIT NONE
     CHARACTER(1024)  :: DLL_InitProcName      ! Name of the DLL procedure to call during initialisation [-]
     CHARACTER(1024)  :: DLL_CalcProcName      ! Name of the DLL procedure to call during CalcOutput [-]
     CHARACTER(1024)  :: DLL_EndProcName      ! Name of the DLL procedure to call during End [-]
+    CHARACTER(1024)  :: DirRoot      ! Directory and rootname of simulation input file [-]
   END TYPE Orca_InputFile
 ! =======================
 ! =========  Orca_OtherStateType  =======
@@ -118,9 +118,8 @@ CONTAINS
 ! 
    ErrStat = ErrID_None
    ErrMsg  = ""
-    DstInitInputData%DirRoot = SrcInitInputData%DirRoot
-    DstInitInputData%DLLPathFileName = SrcInitInputData%DLLPathFileName
-    DstInitInputData%DT = SrcInitInputData%DT
+    DstInitInputData%InputFile = SrcInitInputData%InputFile
+    DstInitInputData%RootName = SrcInitInputData%RootName
     DstInitInputData%TMax = SrcInitInputData%TMax
  END SUBROUTINE Orca_CopyInitInput
 
@@ -170,9 +169,8 @@ CONTAINS
   Re_BufSz  = 0
   Db_BufSz  = 0
   Int_BufSz  = 0
-      Int_BufSz  = Int_BufSz  + 1*LEN(InData%DirRoot)  ! DirRoot
-      Int_BufSz  = Int_BufSz  + 1*LEN(InData%DLLPathFileName)  ! DLLPathFileName
-      Re_BufSz   = Re_BufSz   + 1  ! DT
+      Int_BufSz  = Int_BufSz  + 1*LEN(InData%InputFile)  ! InputFile
+      Int_BufSz  = Int_BufSz  + 1*LEN(InData%RootName)  ! RootName
       Re_BufSz   = Re_BufSz   + 1  ! TMax
   IF ( Re_BufSz  .GT. 0 ) THEN 
      ALLOCATE( ReKiBuf(  Re_BufSz  ), STAT=ErrStat2 )
@@ -201,16 +199,14 @@ CONTAINS
   Db_Xferred  = 1
   Int_Xferred = 1
 
-        DO I = 1, LEN(InData%DirRoot)
-          IntKiBuf(Int_Xferred) = ICHAR(InData%DirRoot(I:I), IntKi)
+        DO I = 1, LEN(InData%InputFile)
+          IntKiBuf(Int_Xferred) = ICHAR(InData%InputFile(I:I), IntKi)
           Int_Xferred = Int_Xferred   + 1
         END DO ! I
-        DO I = 1, LEN(InData%DLLPathFileName)
-          IntKiBuf(Int_Xferred) = ICHAR(InData%DLLPathFileName(I:I), IntKi)
+        DO I = 1, LEN(InData%RootName)
+          IntKiBuf(Int_Xferred) = ICHAR(InData%RootName(I:I), IntKi)
           Int_Xferred = Int_Xferred   + 1
         END DO ! I
-      ReKiBuf ( Re_Xferred:Re_Xferred+(1)-1 ) = InData%DT
-      Re_Xferred   = Re_Xferred   + 1
       ReKiBuf ( Re_Xferred:Re_Xferred+(1)-1 ) = InData%TMax
       Re_Xferred   = Re_Xferred   + 1
  END SUBROUTINE Orca_PackInitInput
@@ -249,16 +245,14 @@ CONTAINS
   Re_Xferred  = 1
   Db_Xferred  = 1
   Int_Xferred  = 1
-      DO I = 1, LEN(OutData%DirRoot)
-        OutData%DirRoot(I:I) = CHAR(IntKiBuf(Int_Xferred))
+      DO I = 1, LEN(OutData%InputFile)
+        OutData%InputFile(I:I) = CHAR(IntKiBuf(Int_Xferred))
         Int_Xferred = Int_Xferred   + 1
       END DO ! I
-      DO I = 1, LEN(OutData%DLLPathFileName)
-        OutData%DLLPathFileName(I:I) = CHAR(IntKiBuf(Int_Xferred))
+      DO I = 1, LEN(OutData%RootName)
+        OutData%RootName(I:I) = CHAR(IntKiBuf(Int_Xferred))
         Int_Xferred = Int_Xferred   + 1
       END DO ! I
-      OutData%DT = ReKiBuf( Re_Xferred )
-      Re_Xferred   = Re_Xferred + 1
       OutData%TMax = ReKiBuf( Re_Xferred )
       Re_Xferred   = Re_Xferred + 1
  END SUBROUTINE Orca_UnPackInitInput
@@ -626,6 +620,7 @@ ENDIF
     DstInputFileData%DLL_InitProcName = SrcInputFileData%DLL_InitProcName
     DstInputFileData%DLL_CalcProcName = SrcInputFileData%DLL_CalcProcName
     DstInputFileData%DLL_EndProcName = SrcInputFileData%DLL_EndProcName
+    DstInputFileData%DirRoot = SrcInputFileData%DirRoot
  END SUBROUTINE Orca_CopyInputFile
 
  SUBROUTINE Orca_DestroyInputFile( InputFileData, ErrStat, ErrMsg )
@@ -678,6 +673,7 @@ ENDIF
       Int_BufSz  = Int_BufSz  + 1*LEN(InData%DLL_InitProcName)  ! DLL_InitProcName
       Int_BufSz  = Int_BufSz  + 1*LEN(InData%DLL_CalcProcName)  ! DLL_CalcProcName
       Int_BufSz  = Int_BufSz  + 1*LEN(InData%DLL_EndProcName)  ! DLL_EndProcName
+      Int_BufSz  = Int_BufSz  + 1*LEN(InData%DirRoot)  ! DirRoot
   IF ( Re_BufSz  .GT. 0 ) THEN 
      ALLOCATE( ReKiBuf(  Re_BufSz  ), STAT=ErrStat2 )
      IF (ErrStat2 /= 0) THEN 
@@ -719,6 +715,10 @@ ENDIF
         END DO ! I
         DO I = 1, LEN(InData%DLL_EndProcName)
           IntKiBuf(Int_Xferred) = ICHAR(InData%DLL_EndProcName(I:I), IntKi)
+          Int_Xferred = Int_Xferred   + 1
+        END DO ! I
+        DO I = 1, LEN(InData%DirRoot)
+          IntKiBuf(Int_Xferred) = ICHAR(InData%DirRoot(I:I), IntKi)
           Int_Xferred = Int_Xferred   + 1
         END DO ! I
  END SUBROUTINE Orca_PackInputFile
@@ -769,6 +769,10 @@ ENDIF
       END DO ! I
       DO I = 1, LEN(OutData%DLL_EndProcName)
         OutData%DLL_EndProcName(I:I) = CHAR(IntKiBuf(Int_Xferred))
+        Int_Xferred = Int_Xferred   + 1
+      END DO ! I
+      DO I = 1, LEN(OutData%DirRoot)
+        OutData%DirRoot(I:I) = CHAR(IntKiBuf(Int_Xferred))
         Int_Xferred = Int_Xferred   + 1
       END DO ! I
  END SUBROUTINE Orca_UnPackInputFile
