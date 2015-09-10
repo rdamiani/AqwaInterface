@@ -4,7 +4,6 @@ OrcaFlexWrapper driver input file.  V1.00
 ----  OrcaFlex inputs  -------------------------------------------------------
    0.0025      DT                -- timestep size for driver to take (or DEFAULT for what the file contains)
    OrcaFlex_Interface.dat     OrcaIptFileName   -- name of OrcaFlex interface input file (relative, or including the full path) -- no file extension
-   FASTLinkDLL.dll   DLL Name    -- name of dll to use for OrcaFlex -- must include full path
 ----  Coordinates  -----------------------------------------------------------
    t           PtfmCoords        -- We are specifying the platform coordinates
    t           Degrees           -- Rotations specified in degrees and degrees/sec (radians otherwise)
