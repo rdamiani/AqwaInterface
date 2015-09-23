@@ -1,0 +1,19 @@
+Test number 001
+OrcaFlexWrapper driver input file.  V1.00
+   t           echo
+----  OrcaFlex inputs  -------------------------------------------------------
+   0.001      DT                -- timestep size for driver to take (or DEFAULT for what the file contains)
+   OrcaFlex_Interface.dat     OrcaIptFileName   -- name of OrcaFlex interface input file (relative, or including the full path) -- no file extension
+----  Coordinates  -----------------------------------------------------------
+   f           PtfmCoords        -- We are specifying the platform coordinates
+   t           Degrees           -- Rotations specified in degrees and degrees/sec (radians otherwise)
+ 1,0,0,0,5,0   PtfmCoord         -- X,Y,Z,R1,R2,R3 coordinate and rotation       (m,      degrees)
+ 0,0,0,0,0,0   PtfmVeloc         -- Velocity (time derivative of PtfmCoord)      (m/s,    degrees/sec)
+ 0,0,0,0,0,0   PtfmAccel         -- Accelity (2nd time derivative of PtfmCoord)  (m/s^2,  degrees/sec^2)
+   f           AddedMass         -- Write the added mass matrix to the screen
+   f           AddedMassFile     -- Write the added mass matrix to a file (.am)
+----  Points file input (output given as POINTSFILENAME.Velocity.EXT)  -------
+   t           PointsFile        -- read in a list of points from a file
+   t           PointsDegrees     -- Angles are specified in degrees in the points file
+"Test002--Semi.pts"   PointsFileName -- name of points file (comma separated coordinate and velocity set: x,y,z,R1,R2,R3,Vx,Vy,Vz,Vr1,Vr2,Vr3 # symbol for comments)
+END of driver input file

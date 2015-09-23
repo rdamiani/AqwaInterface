@@ -2,8 +2,8 @@
 Test for OrcaFlex interface to FAST v8
 ---------------------- SIMULATION DATA -----------------------------------------
    False             Echo              - Echo input data to "<RootName>.ech" (flag)
-   Test001           OrcaIptFileName   - name of OrcaFlex input file without file extension (relative, or including the full path)
-   FASTLinkDLL.dll   DLL_FileName      - name of dll to use for OrcaFlex
+   C:\Users\aplatt\Documents\software_development\windsvn\FAST\branches\BJonkman\FAST_Orca_Test\F7_Orca_OC4_LC13a\NRELOffshrBsline5MW_OC4DeepCwindSemi          OrcaIptFileName   - name of OrcaFlex input file without file extension (relative, or including the full path)
+   C:\Users\aplatt\Documents\software_development\windsvn\FAST\branches\BJonkman\FAST_Orca_Test\F7_Orca_OC4_LC13a\FASTLinkDLL.dll   DLL_FileName      - name of dll to use for OrcaFlex
 --------  OUTPUTS  -------------------------------------------------------------
                    OutList             - The next line(s) contains a list of output parameters.  See OutListParameters.xlsx for a listing of available output channels, (-)
 END of input file (the word "END" must appear in the first 3 columns of this last OutList line)
