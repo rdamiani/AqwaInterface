@@ -1,0 +1,7 @@
+------- OrcaFlex Interface v1.00.* INPUT FILE ----------------------------------
+MIT-NREL TLP OrcaFlex interface to FAST v8
+---------------------- SIMULATION DATA -----------------------------------------
+   False             Echo              - Echo input data to "<RootName>.ech" (flag)
+   NRELOffshrBsline5MW_Floating_TLP_Orca   OrcaIptFileName   - name of OrcaFlex input file without file extension (relative, or including the full path)
+   ..\_Shared\FASTLinkDLL_x64.dll   DLL_FileName      - name of dll to use for OrcaFlex
+--------------------------------------------------------------------------------

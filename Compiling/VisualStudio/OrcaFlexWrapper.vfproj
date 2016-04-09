@@ -27,7 +27,6 @@
 		<Configuration Name="Debug|x64" OutputDirectory="..\..\bin\">
 				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" Preprocess="preprocessYes" StandardWarnings="standardWarningsF03" DisableSpecificDiagnostics="5268,5199" WarnInterfaces="true" Traceback="true" BoundsCheck="true" StackFrameCheck="true" RuntimeLibrary="rtMultiThreadedDebug" UseMkl="mklSequential"/>
 				<Tool Name="VFLinkerTool" OutputFile="$(OutDir)\FAST_dev_$(ConfigurationName)_$(PlatformName).exe" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" GenerateManifest="false" GenerateDebugInformation="true" SubSystem="subSystemConsole" StackReserveSize="999999999" LargeAddressAware="addrAwareLarge"/>
-				<Tool Name="VFResourceCompilerTool" AdditionalIncludeDirectories="C:\Users\aplatt\Desktop\orcaflex tie in\libs"/>
 				<Tool Name="VFMidlTool" SuppressStartupBanner="true" TargetEnvironment="midlTargetAMD64"/>
 				<Tool Name="VFCustomBuildTool"/>
 				<Tool Name="VFPreLinkEventTool"/>
@@ -48,19 +47,17 @@
 		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
 		<Filter Name="Library">
 		<Filter Name="dependencies">
-		<File RelativePath="..\..\..\..\..\windsvn\NWTC_Library\trunk\source\dependencies\lapack\NWTC_LAPACK.f90"/></Filter>
-		<File RelativePath="..\..\..\..\..\windsvn\NWTC_Library\trunk\source\ModMesh.f90"/>
-		<File RelativePath="..\..\..\..\..\windsvn\NWTC_Library\trunk\source\ModMesh_Mapping.f90"/>
-		<File RelativePath="..\..\..\..\..\windsvn\NWTC_Library\trunk\source\ModMesh_Types.f90"/>
-		<File RelativePath="..\..\..\..\..\windsvn\NWTC_Library\trunk\source\NWTC_Base.f90">
-			<FileConfiguration Name="Debug|Win32">
-				<Tool Name="VFFortranCompilerTool" Optimization="optimizeMaxSpeed"/></FileConfiguration></File>
-		<File RelativePath="..\..\..\..\..\windsvn\NWTC_Library\trunk\source\NWTC_IO.f90"/>
-		<File RelativePath="..\..\..\..\..\windsvn\NWTC_Library\trunk\source\NWTC_Library.f90"/>
-		<File RelativePath="..\..\..\..\..\windsvn\NWTC_Library\trunk\source\NWTC_Library_Types.f90"/>
-		<File RelativePath="..\..\..\..\..\windsvn\NWTC_Library\trunk\source\NWTC_Num.f90"/>
-		<File RelativePath="..\..\..\..\..\windsvn\NWTC_Library\trunk\source\SingPrec.f90"/>
-		<File RelativePath="..\..\..\..\..\windsvn\NWTC_Library\trunk\source\SysIVF.f90"/></Filter>
+		<File RelativePath="..\..\Source\NWTC_Library\NWTC_LAPACK.f90"/></Filter>
+		<File RelativePath="..\..\Source\NWTC_Library\ModMesh.f90"/>
+		<File RelativePath="..\..\Source\NWTC_Library\ModMesh_Mapping.f90"/>
+		<File RelativePath="..\..\Source\NWTC_Library\ModMesh_Types.f90"/>
+		<File RelativePath="..\..\Source\NWTC_Library\NWTC_Base.f90"/>
+		<File RelativePath="..\..\Source\NWTC_Library\NWTC_IO.f90"/>
+		<File RelativePath="..\..\Source\NWTC_Library\NWTC_Library.f90"/>
+		<File RelativePath="..\..\Source\NWTC_Library\NWTC_Library_Types.f90"/>
+		<File RelativePath="..\..\Source\NWTC_Library\NWTC_Num.f90"/>
+		<File RelativePath="..\..\Source\NWTC_Library\SingPrec.f90"/>
+		<File RelativePath="..\..\Source\NWTC_Library\SysIVF.f90"/></Filter>
 		<Filter Name="OrcaFlex">
 		<Filter Name="RegistryFiles">
 		<File RelativePath="..\..\Source\Registry\OrcaFlexInterface.txt">
