@@ -1,8 +1,8 @@
-------- SERVODYN V1.02.* INPUT FILE --------------------------------------------
+------- SERVODYN v1.05.* INPUT FILE --------------------------------------------
 NREL 5.0 MW Baseline Wind Turbine for Use in Offshore Analysis. Properties from Dutch Offshore Wind Energy Converter (DOWEC) 6MW Pre-Design (10046_009.pdf) and REpower 5M 5MW (5m_uk.pdf)
 ---------------------- SIMULATION CONTROL --------------------------------------
 False         Echo         - Echo input data to <RootName>.ech (flag)
-default     DT           - Communication interval for controllers (s)
+"default"     DT           - Communication interval for controllers (s) (or "default")
 ---------------------- PITCH CONTROL -------------------------------------------
           5   PCMode       - Pitch control mode {0: none, 3: user-defined from routine PitchCntrl, 4: user-defined from Simulink/Labview, 5: user-defined from Bladed-style DLL} (switch)
           0   TPCOn        - Time to enable active pitch control (s) [unused when PCMode=0]
@@ -49,7 +49,7 @@ True          GenTiStp     - Method to stop the generator {T: timed using TimGen
         0.6   HSSBrDT      - Time for HSS-brake to reach full deployment once initiated (sec) [used only when HSSBrMode=1]
     28116.2   HSSBrTqF     - Fully deployed HSS-brake torque (N-m)
 ---------------------- NACELLE-YAW CONTROL -------------------------------------
-          0   YCMode       - Yaw control mode {0: none, 1: simple, 3: user-defined from routine UserYawCont, 4: user-defined from Simulink/Labview, 5: user-defined from Bladed-style DLL} (switch)
+          0   YCMode       - Yaw control mode {0: none, 3: user-defined from routine UserYawCont, 4: user-defined from Simulink/Labview, 5: user-defined from Bladed-style DLL} (switch)
      9999.9   TYCOn        - Time to enable active yaw control (s) [unused when YCMode=0]
           0   YawNeut      - Neutral yaw position--yaw spring force is zero at this yaw (degrees)
 9.02832E+09   YawSpr       - Nacelle-yaw spring constant (N-m/rad)
@@ -60,12 +60,15 @@ True          GenTiStp     - Method to stop the generator {T: timed using TimGen
 ---------------------- TUNED MASS DAMPER ---------------------------------------
 False         CompNTMD     - Compute nacelle tuned mass damper {true/false} (flag)
 "unused"      NTMDfile     - Name of the file for nacelle tuned mass damper (quoted string) [unused when CompNTMD is false]
----------------------- BLADED INTERFACE ----------------------------------------
+False         CompTTMD     - Compute tower tuned mass damper {true/false} (flag)
+"unused"      TTMDfile     - Name of the file for tower tuned mass damper (quoted string) [unused when CompTTMD is false]
+---------------------- BLADED INTERFACE ---------------------------------------- [used only with Bladed Interface]
 "..\_Shared\ServoData\DISCON_OC3Hywind_x64.dll"    DLL_FileName - Name/location of the dynamic library {.dll [Windows] or .so [Linux]} in the Bladed-DLL format (-) [used only with Bladed Interface]
-"DISCON.IN"    DLL_InFile   - Name of input file sent to the DLL [used only with Bladed Interface] (-)
-"default"     DLL_DT       - Communication interval for dynamic library [used only with Bladed Interface] (s) (or "default")
-false         DLL_Ramp     - Whether a linear ramp should be used between DLL_DT time steps [introduces time shift when true] (flag)
-9999.9        BPCutoff     - Cuttoff frequency for low-pass filter on blade pitch from DLL (Hz)
+"DISCON.IN"    DLL_InFile   - Name of input file sent to the DLL (-) [used only with Bladed Interface]
+"DISCON"      DLL_ProcName - Name of procedure in DLL to be called (-) [case sensitive; used only with DLL Interface]
+"default"     DLL_DT       - Communication interval for dynamic library (s) (or "default") [used only with Bladed Interface]
+false         DLL_Ramp     - Whether a linear ramp should be used between DLL_DT time steps [introduces time shift when true] (flag) [used only with Bladed Interface]
+     9999.9   BPCutoff     - Cuttoff frequency for low-pass filter on blade pitch from DLL (Hz) [used only with Bladed Interface]
           0   NacYaw_North - Reference yaw angle of the nacelle when the upwind end points due North (deg) [used only with Bladed Interface]
           0   Ptch_Cntrl   - Record 28: Use individual pitch control {0: collective pitch; 1: individual pitch control} (switch) [used only with Bladed Interface]
           0   Ptch_SetPnt  - Record  5: Below-rated pitch angle set-point (deg) [used only with Bladed Interface]
@@ -88,7 +91,7 @@ True          SumPrint     - Print summary data to <RootName>.sum (flag) (curren
           1   OutFile      - Switch to determine where output will be placed: {1: in module output file only; 2: in glue code output file only; 3: both} (currently unused)
 True          TabDelim     - Use tab delimiters in text tabular output file? (flag) (currently unused)
 "ES10.3E2"    OutFmt       - Format used for text tabular output (except time).  Resulting field should be 10 characters. (quoted string) (currently unused)
-         0   TStart       - Time to begin tabular output (s) (currently unused)
+          0   TStart       - Time to begin tabular output (s) (currently unused)
               OutList      - The next line(s) contains a list of output parameters.  See OutListParameters.xlsx for a listing of available output channels, (-)
 "GenPwr"                  - Electrical generator power and torque
 "GenTq"                   - Electrical generator power and torque
