@@ -12,7 +12,7 @@ inputFiles = {'MIT-NREL_TLP\NRELOffshrBsline5MW_MIT_NREL_TLP.fst',...
 for i=1:length(inputFiles)
     
     newDir = fileparts(inputFiles{i});    
-    ConvertFAST8_12to15(inputFiles{i},newDir);
+    ConvertFAST8_15to16(inputFiles{i},newDir);
     
 end
 
