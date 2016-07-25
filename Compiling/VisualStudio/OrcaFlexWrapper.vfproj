@@ -65,7 +65,7 @@
 				<Tool Name="VFCustomBuildTool" CommandLine="CALL RunRegistry.bat OrcaFlexInterface" Description="Running Registry for OrcaFlexInterface" Outputs="..\..\Source\OrcaFlexInterface_Types.f90"/></FileConfiguration>
 			<FileConfiguration Name="Debug|x64">
 				<Tool Name="VFCustomBuildTool" CommandLine="CALL RunRegistry.bat OrcaFlexInterface" Description="Running Registry for OrcaFlexInterface" Outputs="..\..\Source\OrcaFlexInterface_Types.f90"/></FileConfiguration></File></Filter>
-		<File RelativePath="..\..\Source\OrcaFlexInterface.f90"/>
+		<File RelativePath="..\..\Source\OrcaFlexInterface.F90"/>
 		<File RelativePath="..\..\Source\OrcaFlexInterface_Types.f90"/></Filter>
 		<Filter Name="OrcaFlexDriver">
 		<File RelativePath="..\..\Source\Driver\OrcaDriver.f90"/>

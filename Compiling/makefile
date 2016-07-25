@@ -123,7 +123,7 @@ NETLIB_SOURCES :=          \
 
 Orca_SOURCES =              \
 	OrcaFlexInterface_Types.f90    \
-	OrcaFlexInterface.f90
+	OrcaFlexInterface.F90
 
 
 
@@ -139,6 +139,8 @@ vpath %.f 	$(NETLIB_DIR)
 vpath %.mod $(INTER_DIR)
 vpath %$(OBJ_EXT) $(INTER_DIR)
 vpath %.txt $(RegistryDIR)
+# this should just be for .F90 (uppercase required for Doxygen preprocessing)
+vpath % 	$(Orca_DIR)
 
 
 
