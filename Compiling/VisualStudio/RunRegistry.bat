@@ -22,8 +22,8 @@ REM ----------------------------------------------------------------------------
 SET FAST_Loc=..\..\Source
 SET Registry=..\..\bin\Registry_win32.exe
 
-SET Orca_Loc=%FAST_Loc%
-SET Orca_Reg_Loc=%Orca_Loc%\Registry
+SET Aqwa_Loc=%FAST_Loc%
+SET Aqwa_Reg_Loc=%Aqwa_Loc%\Registry
 SET NWTC_Lib_Loc=%FAST_Loc%\NWTC_Library
 
 SET ED_Loc=%FAST_Loc%\dependencies\ElastoDyn
@@ -69,7 +69,7 @@ SET CURR_LOC=%FAST_Loc%
 %REGISTRY% "%CURR_LOC%\FAST_Registry.txt" -I "%NWTC_Lib_Loc%" -I "%ED_Loc%" -I "%SrvD_Loc%" -I "%AD14_Loc%" -I^
  "%AD_Loc%" -I "%BEMT_Loc%" -I "%UA_Loc%" -I "%AFI_Loc%" -I "%BD_Loc%" -I^
  "%IfW_Reg_Loc%" -I "%DWM_LOC%" -I "%SD_Loc%" -I "%HD_Reg_Loc%" -I "%MAP_Loc_R%" -I "%FEAM_Reg_Loc%"  -I^
- "%IceF_Loc%" -I "%IceD_Loc%" -I "%TMD_Loc%" -I "%MD_Loc%" -I "%OpFM_Loc%" -I "%Orca_Reg_Loc%" -noextrap -O "%CURR_LOC%"
+ "%IceF_Loc%" -I "%IceD_Loc%" -I "%TMD_Loc%" -I "%MD_Loc%" -I "%OpFM_Loc%" -I "%Aqwa_Reg_Loc%" -noextrap -O "%CURR_LOC%"
 
 echo off
 GOTO checkError
@@ -201,9 +201,9 @@ SET CURR_LOC=%IceD_Loc%
 GOTO checkError
 
 
-:OrcaFlexInterface
-SET CURR_LOC=%Orca_Loc%
-%REGISTRY% "%Orca_Reg_Loc%\OrcaFlexInterface.txt" -I "%NWTC_Lib_Loc%" -I "%Orca_Reg_Loc%"  -O "%CURR_LOC%"
+:AqwaInterface
+SET CURR_LOC=%Aqwa_Loc%
+%REGISTRY% "%Aqwa_Reg_Loc%\AqwaInterface.txt" -I "%NWTC_Lib_Loc%" -I "%Aqwa_Reg_Loc%"  -O "%CURR_LOC%"
 GOTO checkError
 
 
@@ -252,8 +252,8 @@ SET IfW_Reg_Loc=
 SET FEAM_Reg_Loc=
 SET MD_Loc=
 SET OpFM_Loc=
-SET Orca_Loc=
-SET Orca_Reg_Loc=
+SET Aqwa_Loc=
+SET Aqwa_Reg_Loc=
 
 SET ModuleName=
 SET CURR_LOC=
