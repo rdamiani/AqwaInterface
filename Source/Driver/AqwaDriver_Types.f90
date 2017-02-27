@@ -1,8 +1,8 @@
 !**********************************************************************************************************************************
 !
-!  MODULE: Orca_Driver_Types  - This module contains types used by the OrcaFlexInterface Driver program to store arguments passed in
+!  MODULE: Aqwa_Driver_Types  - This module contains types used by the AqwaInterface Driver program to store arguments passed in
 !
-!  The types listed here are used within the OrcaFlexInterface Driver program to store the settings. These settings are read in as
+!  The types listed here are used within the AqwaInterface Driver program to store the settings. These settings are read in as
 !  command line arguments, then stored within these types.
 !
 !**********************************************************************************************************************************
@@ -11,27 +11,27 @@
 ! LICENSING
 ! Copyright (C) 2015  National Renewable Energy Laboratory
 !
-!    This file is part of OrcaFlexInterface.
+!    This file is part of AqwaInterface.
 !
-!    OrcaFlexInterface is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as
+!    AqwaInterface is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as
 !    published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 !
 !    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
 !    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 !
-!    You should have received a copy of the GNU General Public License along with OrcaFlexInterface.
+!    You should have received a copy of the GNU General Public License along with AqwaInterface.
 !    If not, see <http://www.gnu.org/licenses/>.
 !
 !**********************************************************************************************************************************
 ! File last committed: $Date: 2014-07-29 13:30:04 -0600 (Tue, 29 Jul 2014) $
 ! (File) Revision #: $Rev: 169 $
-! URL: $HeadURL: https://windsvn.nrel.gov/OrcaFlexInterface/branches/modularization2/Source/Driver/OrcaDriver_Types.f90 $
+! URL: $HeadURL: https://windsvn.nrel.gov/AqwaInterface/branches/modularization2/Source/Driver/AqwaDriver_Types.f90 $
 !**********************************************************************************************************************************
 
-MODULE OrcaDriver_Types
+MODULE AqwaDriver_Types
 
    USE NWTC_Library
-   USE OrcaFlexInterface_Types
+   USE AqwaInterface_Types
 
    IMPLICIT NONE
 
@@ -41,10 +41,10 @@ MODULE OrcaDriver_Types
       !! NOTE: The WindFileType is only set if it is given as a command line option.  Otherwise
       !!       it is handled internally by InflowWInd.
       !!
-      !! NOTE: The wind direction is specified by the OrcaFlexInterface input file.
-   TYPE     :: OrcaDriver_Flags
+      !! NOTE: The wind direction is specified by the AqwaInterface input file.
+   TYPE     :: AqwaDriver_Flags
       LOGICAL                 :: DvrIptFile           = .FALSE.      !< Was an input file name given on the command line?
-      LOGICAL                 :: OrcaIptFile          = .FALSE.      !< Was an OrcaFlexInterface input file requested?
+      LOGICAL                 :: AqwaIptFile          = .FALSE.      !< Was an AqwaInterface input file requested?
       LOGICAL                 :: AddedMass            = .FALSE.      !< create an added mass table at command line?
       LOGICAL                 :: AddedMassFile        = .FALSE.      !< create an added mass file?
       LOGICAL                 :: DT                   = .FALSE.      !< specified a resolution in time
@@ -65,13 +65,13 @@ MODULE OrcaDriver_Types
       LOGICAL                 :: PointsOutputInit     = .FALSE.      !< Is the Points output file initialized
       LOGICAL                 :: Verbose              = .FALSE.      !< Verbose error reporting
       LOGICAL                 :: VVerbose             = .FALSE.      !< Very Verbose error reporting
-   END TYPE    OrcaDriver_Flags
+   END TYPE    AqwaDriver_Flags
 
 
       ! This contains all the settings (possible passed in arguments).
-   TYPE     :: OrcaDriver_Settings
+   TYPE     :: AqwaDriver_Settings
       CHARACTER(1024)         :: DvrIptFileName                !< Driver input file name
-      CHARACTER(1024)         :: OrcaIptFileName               !< Filename of OrcaFlexInterface input file to read (if no driver input file)
+      CHARACTER(1024)         :: AqwaIptFileName               !< Filename of AqwaInterface input file to read (if no driver input file)
       CHARACTER(1024)         :: AddedMassFileName             !< Filename for the added mass matrix output
 
       CHARACTER(1024)         :: PointsFileName                !< Filename of points file to read in
@@ -86,9 +86,9 @@ MODULE OrcaDriver_Types
       REAL(ReKi)              :: PtfmAccel(1:6)                !< instantaneous velocities corresponding to the PtfmCoord
 
       TYPE(ProgDesc)          :: ProgInfo                      !< Program info
-      TYPE(ProgDesc)          :: OrcaProgInfo                  !< Program info for OrcaFlexInterface
+      TYPE(ProgDesc)          :: AqwaProgInfo                  !< Program info for AqwaInterface
 
-   END TYPE    OrcaDriver_Settings
+   END TYPE    AqwaDriver_Settings
 
 
-END MODULE OrcaDriver_Types
+END MODULE AqwaDriver_Types

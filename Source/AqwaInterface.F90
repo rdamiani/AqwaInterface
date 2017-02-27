@@ -95,17 +95,21 @@ MODULE AqwaInterface
    USE AqwaInterface_Parameters
    USE AqwaInterface_Types
 
-   !!USE, INTRINSIC             :: ISO_C_Binding
+   USE, INTRINSIC             :: ISO_C_Binding
 
 
    IMPLICIT NONE
 
    PRIVATE
 
-
+   !ABSTRACT INTERFACE      ! These are interfaces to the DLL
    INTERFACE      ! These are interfaces for the DLL to be seen externally by ANSYS AQWA
 
-      SUBROUTINE AqwaUserPtfmLdInitialise(DT,TMax)   !!!BIND(C)
+#ifdef __GFORTRAN__
+       SUBROUTINE AqwaUserPtfmLdInitialise(DT,TMax)   BIND(C)
+#else
+       SUBROUTINE AqwaUserPtfmLdInitialise(DT,TMax)    !!!BIND(C)
+#endif
          USE, INTRINSIC :: ISO_C_BINDING, ONLY: C_FLOAT
          !DEC$ ATTRIBUTES DEFAULT, STDCALL, DECORATE, ALIAS:'AqwaUserPtfmLdInitialise'::AqwaUserPtfmLdInitialise
          !GCC$ ATTRIBUTES STDCALL :: AqwaUserPtfmLdInitialise
@@ -114,13 +118,15 @@ MODULE AqwaInterface
       END SUBROUTINE AqwaUserPtfmLdInitialise
 
 
-
-
-      SUBROUTINE AqwaUserPtfmLd( X, XD, ZTime, DirRoot, PtfmAM, PtfmFt) !!!BIND(C)
-
+#ifdef __GFORTRAN__
+      SUBROUTINE AqwaUserPtfmLd( X, XD, ZTime, DirRoot, A2Fast_PtfmAM, A2Fast_PtfmFt) BIND(C)
+#else
+      SUBROUTINE AqwaUserPtfmLd( X, XD, ZTime, DirRoot, A2Fast_PtfmAM, A2Fast_PtfmFt) !!!BIND(C)
+#endif
+         USE, INTRINSIC :: ISO_C_Binding, ONLY: C_FLOAT, C_CHAR
          !DEC$ ATTRIBUTES STDCALL, ALIAS:'FastSocketPtfmLd'::AqwaUserPtfmLd
          !DEC$ ATTRIBUTES REFERENCE :: ICALL
-         !DEC$ ATTRIBUTES REFERENCE :: TIME
+         !DEC$ ATTRIBUTES REFERENCE :: ZTIME
          !DEC$ ATTRIBUTES REFERENCE :: ITIME
          !DEC$ ATTRIBUTES REFERENCE :: DTIME
          !DEC$ ATTRIBUTES REFERENCE :: ISTAGE
@@ -135,17 +141,18 @@ MODULE AqwaInterface
          
          !GCC$ ATTRIBUTES STDCALL :: AqwaUserPtfmLd
          CHARACTER(KIND=C_CHAR),    INTENT(IN   )  :: DirRoot
-         REAL(ReKi) ,             INTENT(IN   )  :: X(6)           !< Translational and rotational displacement (m, radians) relative to inertial frame.
-         REAL(ReKi) ,             INTENT(IN   )  :: XD(6)          !< Translational and rotational velocity (m/s, radians/s) relative to inertial frame.
-         REAL(ReKi) ,             INTENT(IN   )  :: ZTime          !< Current time in seconds
-         REAL(ReKi) ,             INTENT(  OUT)  :: PtfmAM(6,6)    !< Added mass matrix (kg, kg-m, kg-m^2)
-         REAL(ReKi) ,             INTENT(  OUT)  :: PtfmFt(6)      !< Platform forces -- [3 translation (N), 3 moments (N-m)] at reference point.
+         REAL(C_FLOAT) ,             INTENT(IN   )  :: X(6)           !< Translational and rotational displacement (m, radians) relative to inertial frame.
+         REAL(C_FLOAT) ,             INTENT(IN   )  :: XD(6)          !< Translational and rotational velocity (m/s, radians/s) relative to inertial frame.
+         REAL(C_FLOAT) ,             INTENT(IN   )  :: ZTime          !< Current time in seconds
+         REAL(C_FLOAT) ,             INTENT(  OUT)  :: A2Fast_PtfmAM(6,6)    !< Added mass matrix (kg, kg-m, kg-m^2)
+         REAL(C_FLOAT) ,             INTENT(  OUT)  :: A2Fast_PtfmFt(6)      !< Platform forces -- [3 translation (N), 3 moments (N-m)] at reference point.
       END SUBROUTINE AqwaUserPtfmLd
 
-
-
-
+#ifdef __GFORTRAN__
+      SUBROUTINE AqwaUserPtfmLdFinalise()  BIND(C)
+#else
       SUBROUTINE AqwaUserPtfmLdFinalise()  !!!BIND(C)
+#endif
          USE, INTRINSIC :: ISO_C_BINDING
          !DEC$ ATTRIBUTES DEFAULT, STDCALL, DECORATE, ALIAS: 'AqwaUserPtfmLdFinalise'::AqwaUserPtfmLdFinalise
          !GCC$ ATTRIBUTES STDCALL :: AqwaUserPtfmLdFinalise
@@ -231,8 +238,8 @@ SUBROUTINE Aqwa_Init( InitInp, u, p, x, xd, z, OtherState, y, m, Interval, InitO
    CALL DispNVD( Aqwa_Ver )
 
    
-   CALL ReadPrimaryFile( InitInp%InputFile, InputFileData, TRIM(InitInp%RootName)//'.Aqwa', ErrStatTmp, ErrMsgTmp )   
-      CALL SetErrStat(ErrStatTmp,ErrMsgTmp,ErrStat,ErrMsg,RoutineName)
+ !!  CALL ReadPrimaryFile( InitInp%InputFile, InputFileData, TRIM(InitInp%RootName)//'.Aqwa', ErrStatTmp, ErrMsgTmp )   
+ !!     CALL SetErrStat(ErrStatTmp,ErrMsgTmp,ErrStat,ErrMsg,RoutineName)
 
 
       ! SET outlist variables, so pass in to SetOutParam the full list
@@ -376,8 +383,8 @@ SUBROUTINE Aqwa_Init( InitInp, u, p, x, xd, z, OtherState, y, m, Interval, InitO
 
 
       ! Set zero values for the MiscVar arrays
-   m%PtfmAM       =  0.0_ReKi
-   m%PtfmFt       =  0.0_ReKi
+   m%A2Fast_PtfmAM       =  0.0_ReKi
+   m%A2Fast_PtfmFt       =  0.0_ReKi
    m%LastTimeStep =  -1.0_DbKi
 
    InitOut%Ver =  Aqwa_Ver
@@ -695,9 +702,7 @@ SUBROUTINE Aqwa_CalcOutput( t, u, p, x, xd, z, OtherState, y, m, ErrStat, ErrMsg
    INTEGER(IntKi),                  INTENT(  OUT)  :: ErrStat           !< Error status of the operation
    CHARACTER(*),                    INTENT(  OUT)  :: ErrMsg            !< Error message if ErrStat /= ErrID_None
 
-   PROCEDURE(AqwaUserPtfmLd),   POINTER        :: AqwaDLL_Calc
-
-
+   
       ! Local variables copied from the mesh
    REAL(ReKi)                                      :: rotdisp(3)        !< Rotation angles from the mesh
    REAL(ReKi)                                      :: q(6)              !< Position from the mesh
@@ -712,19 +717,19 @@ SUBROUTINE Aqwa_CalcOutput( t, u, p, x, xd, z, OtherState, y, m, ErrStat, ErrMsg
 
       ! Local variables for the getting the types correct to pass to the DLL
    CHARACTER(LEN=p%SimNamePathLen)                 :: DLL_DirRootName   !< Path and simulation name without extension
-   REAL(C_FLOAT)                                   :: DLL_X(6)          !< Translational and rotational displacement (m, radians) relative to inertial frame.
-   REAL(C_FLOAT)                                   :: DLL_Xdot(6)       !< Translational and rotational velocity (m/s, radians/s) relative to inertial frame.
+   !REAL(C_FLOAT)                                   :: F2Aqwa_X(6)          !< Translational and rotational displacement (m, radians) relative to inertial frame.
+   !REAL(C_FLOAT)                                   :: F2Aqwa_Xdot(6)       !< Translational and rotational velocity (m/s, radians/s) relative to inertial frame.
    REAL(C_FLOAT)                                   :: DLL_ZTime         !< Current time in seconds
-   REAL(C_FLOAT)                                   :: DLL_PtfmAM(6,6)   !< Added mass matrix (kg, kg-m, kg-m^2)
-   REAL(C_FLOAT)                                   :: DLL_PtfmFt(6)     !< Platform forces -- [3 translation (N), 3 moments (N-m)] at reference point.
+   REAL(C_FLOAT)                                   :: A2Fast_PtfmAM(6,6)   !< Added mass matrix (kg, kg-m, kg-m^2)
+   REAL(C_FLOAT)                                   :: A2Fast_PtfmFt(6)     !< Platform forces -- [3 translation (N), 3 moments (N-m)] at reference point.
 
 
       ! Error Handling and data checking
    INTEGER(IntKi)                                  :: ErrStatTmp        !< Temporary Error status of the operation
    CHARACTER(ErrMsgLen)                            :: ErrMsgTmp         !< Temporary Error message if ErrStat /= ErrID_None
-   CHARACTER(*),     PARAMETER                     :: RoutineName='Aqwa_Calc'
+  
    REAL(ReKi),       PARAMETER                     :: SymmetryTol =  9.999E-4_ReKi  !< Tolerance used to determine if the PtfmAM is symmetric
-
+   CHARACTER(*),   PARAMETER                       :: RoutineName = 'Aqwa_CalcOutput'
 
       ! Copy over time and name to pass to Aqwa DLL
    DLL_DirRootName   =  TRIM(p%SimNamePath)//C_NULL_CHAR    ! Path and name of the simulation file without extension.  Null character added to convert from Fortran string to C-type string.
@@ -739,65 +744,43 @@ SUBROUTINE Aqwa_CalcOutput( t, u, p, x, xd, z, OtherState, y, m, ErrStat, ErrMsg
    qdot      = reshape((/u%PtfmMesh%TranslationVel(:,1),u%PtfmMesh%RotationVel(:,1)/),(/6/))
    qdotdot   = reshape((/u%PtfmMesh%TranslationAcc(:,1),u%PtfmMesh%RotationAcc(:,1)/),(/6/))
 
-
-      ! Copy position and motion information over to pass to the DLL
-   DO I=1,6
-      DLL_X(I)    =  q(I)
-      DLL_Xdot(I) =  qdot(I)
-   ENDDO
-
-
-
-#ifdef NO_LibLoad
-   CALL SetErrStat( ErrID_Warn,'   -->  Skipping AqwaDLL_Calc call',ErrStat,ErrMsg,RoutineName )
-   DLL_PtfmAM  =  0.0_C_FLOAT
-   DLL_PtfmFt  =  0.0_C_FLOAT
-#else
-
+   !!Following lines have been moved to UpdateStates
+   !!   ! Copy position and motion information over to pass to Aqwa; note this is a way to pass this time-step info to Aqwa to do its calc for next time step, syncopated
+   !!
+   !!m%F2Aqwa_q    =  q
+   !!m%F2Aqwa_qd   =  qdot
+   !!m%F2Aqwa_qdd  =  qdotdot
+   !!   
+   !!   ! Make sure this is synced to the C versions too
+   !!m%c_obj%F2Aqwa_q_Len = 6; m%c_obj%F2Aqwa_q = C_LOC( m%F2Aqwa_q )
+   !!m%c_obj%F2Aqwa_qd_Len = 6; m%c_obj%F2Aqwa_qd = C_LOC( m%F2Aqwa_qd )
+   !!m%c_obj%F2Aqwa_qdd_Len = 6; m%c_obj%F2Aqwa_qdd = C_LOC( m%F2Aqwa_qdd )
+   
+      ! Now get the results from Aqwa  
+   m%LastTimeStep =  t
       ! We do not want to call AqwaDLL twice in one timestep.  If _CalcOutput is called twice in a timestep, the second
-      ! call is different from the first only with the accelerations, which Aqwa does not do anything with.
-   IF ( t > m%LastTimeStep .and. .not. EqualRealNos(t,m%LastTimeStep) ) THEN
-         ! Setup the pointer to the DLL procedure
-      CALL C_F_PROCPOINTER( p%DLL_Aqwa%ProcAddr(2), AqwaDLL_Calc )
-         ! Call Aqwa to run the calculation.  There is no error trapping on the Aqwa side, so we will have to do some checks on what receive back
-      CALL AqwaDLL_Calc( DLL_X, DLL_Xdot, DLL_ZTime, DLL_DirRootName, DLL_PtfmAM, DLL_PtfmFt )
-      m%LastTimeStep =  t
+      ! call is different from the first only with the accelerations, which Aqwa does not do anything with.   ?????RRD
+      !IF ( t > m%LastTimeStep .and. .not. EqualRealNos(t,m%LastTimeStep) ) THEN
+      
 
-         ! Copy data over from the DLL output to the m
-      DO I=1,6
-         m%PtfmFT(I) =  DLL_PtfmFT(I)
-         DO J=1,6
-            m%PtfmAM(J,I)  =  DLL_PtfmAM(J,I)
-         ENDDO
-      ENDDO
+         ! Need to unwrap the Aqwa Added Mass that comes in as a flat array: TO DO
+     !! DO I=1,6
+     !!   m%PtfmFT(I) =  Aqwa_PtfmFT(I)
+     !!    DO J=1,6
+     !!       m%PtfmAM(J,I)  =  Aqwa_PtfmAM(J,I)
+     !!    ENDDO
+     !! ENDDO
 
-
-      !!! bjj: commented this out 11=Apr=2016 because it doesn't seem like this is necessary; per jmj
-      !!!   ! Perform some quick QA/QC on the DLL results.  There isn't much we can check, so just check that things are symmetric within some tolerance
-      !!!DO I = 1,5        ! Loop through the 1st 5 rows (columns) of PtfmAM
-      !!!   DO J = (I+1),6 ! Loop through all columns (rows) passed I
-      !!!      IF ( ABS( m%PtfmAM(I,J) - m%PtfmAM(J,I) ) > SymmetryTol )  &
-      !!!         ErrStatTmp  =  ErrID_Fatal
-      !!!         ErrMsgTmp   =  ' The platform added mass matrix returned from Aqwa is unsymmetric.'// &
-      !!!                        '  There may be issues with the Aqwa calculations.'
-      !!!   ENDDO          ! J - All columns (rows) passed I
-      !!!ENDDO             ! I - The 1st 5 rows (columns) of PtfmAM
-      !!!CALL SetErrStat( ErrStatTmp, ErrMsgTmp, ErrStat, ErrMsg, RoutineName )
-      !!!IF ( ErrStat >= ErrID_Fatal) RETURN
-
-   ENDIF
-#endif
-
-
+   
       ! Now calculate the forces with what Aqwa returned
-   m%F_PtfmAM     =  -matmul(m%PtfmAM, qdotdot)
+   m%F_PtfmAM     =  -matmul(m%A2Fast_PtfmAM, qdotdot)
 
 
 
       ! Update the Mesh with values from Aqwa
    DO I=1,3
-      y%PtfmMesh%Force(I,1)  =  m%F_PtfmAM(I)   +  m%PtfmFT(I)
-      y%PtfmMesh%Moment(I,1) =  m%F_PtfmAM(I+3) +  m%PtfmFT(I+3)
+      y%PtfmMesh%Force(I,1)  =  m%F_PtfmAM(I)   +  m%A2Fast_PtfmFT(I)
+      y%PtfmMesh%Moment(I,1) =  m%F_PtfmAM(I+3) +  m%A2Fast_PtfmFT(I+3)
    ENDDO
 
    
@@ -836,11 +819,37 @@ SUBROUTINE Aqwa_UpdateStates( t, n, u, utimes, p, x, xd, z, OtherState, m, ErrSt
       CHARACTER(*),                       INTENT(  OUT) :: ErrMsg     !< Error message if ErrStat /= ErrID_None
 
 
+            ! Local variables copied from the mesh
+   REAL(ReKi)                                      :: rotdisp(3)        !< Rotation angles from the mesh
+   REAL(ReKi)                                      :: q(6)              !< Position from the mesh
+   REAL(ReKi)                                      :: qdot(6)           !< Time derivative of position (velocity) from mesh
+   REAL(ReKi)                                      :: qdotdot(6)        !< 2nd time derivative of position (acceleration) from mesh
+      ! Error Handling and data checking
+   INTEGER(IntKi)                                  :: ErrStatTmp        !< Temporary Error status of the operation
+   CHARACTER(ErrMsgLen)                            :: ErrMsgTmp         !< Temporary Error message if ErrStat /= ErrID_None
+   CHARACTER(*),   PARAMETER                       :: RoutineName = 'Aqwa_CalcOutput'
          ! Initialize ErrStat
 
       ErrStat = ErrID_None
       ErrMsg  = ""
 
+
+          ! Determine the rotational angles from the direction-cosine matrix: To Figure out which u to use for now u=u(1)
+       rotdisp = GetSmllRotAngs ( u(1)%PtfmMesh%Orientation(:,:,1), ErrStatTmp, ErrMsgTmp )
+       CALL SetErrStat( ErrStatTmp, ErrMsgTmp, ErrStat, ErrMsg, RoutineName )
+       IF ( ErrStat >= ErrID_Fatal) RETURN
+
+       q         = reshape((/REAL(u(1)%PtfmMesh%TranslationDisp(:,1),ReKi),rotdisp(:)/),(/6/))
+       qdot      = reshape((/u(1)%PtfmMesh%TranslationVel(:,1),u(1)%PtfmMesh%RotationVel(:,1)/),(/6/))
+       qdotdot   = reshape((/u(1)%PtfmMesh%TranslationAcc(:,1),u(1)%PtfmMesh%RotationAcc(:,1)/),(/6/))
+
+
+          ! Copy position and motion information over to pass to Aqwa; note this is a way to pass this time-step info to Aqwa to do its calc for next time step, syncopated
+   
+       m%F2Aqwa_q    =  q
+       m%F2Aqwa_qd   =  qdot
+       m%F2Aqwa_qdd  =  qdotdot
+       
 
 END SUBROUTINE Aqwa_UpdateStates
 !++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1032,12 +1041,12 @@ SUBROUTINE SetAllOuts( ParamData, OutData, m, ErrStat, ErrMsg )
    m%AllOuts(  AqwaMyi  )  =  OutData%PtfmMesh%Moment(2,1)/1000_ReKi
    m%AllOuts(  AqwaMzi  )  =  OutData%PtfmMesh%Moment(3,1)/1000_ReKi
 
-   m%AllOuts(  AqwaHMFxi  )  =  m%PtfmFT(1)/1000_ReKi
-   m%AllOuts(  AqwaHMFyi  )  =  m%PtfmFT(2)/1000_ReKi
-   m%AllOuts(  AqwaHMFzi  )  =  m%PtfmFT(3)/1000_ReKi
-   m%AllOuts(  AqwaHMMxi  )  =  m%PtfmFT(4)/1000_ReKi
-   m%AllOuts(  AqwaHMMyi  )  =  m%PtfmFT(5)/1000_ReKi
-   m%AllOuts(  AqwaHMMzi  )  =  m%PtfmFT(6)/1000_ReKi
+   m%AllOuts(  AqwaHMFxi  )  =  m%A2Fast_PtfmFt(1)/1000_ReKi
+   m%AllOuts(  AqwaHMFyi  )  =  m%A2Fast_PtfmFt(2)/1000_ReKi
+   m%AllOuts(  AqwaHMFzi  )  =  m%A2Fast_PtfmFt(3)/1000_ReKi
+   m%AllOuts(  AqwaHMMxi  )  =  m%A2Fast_PtfmFt(4)/1000_ReKi
+   m%AllOuts(  AqwaHMMyi  )  =  m%A2Fast_PtfmFt(5)/1000_ReKi
+   m%AllOuts(  AqwaHMMzi  )  =  m%A2Fast_PtfmFt(6)/1000_ReKi
 
    m%AllOuts(  AqwaAMFxi  )  =  m%F_PtfmAM(1)/1000_ReKi
    m%AllOuts(  AqwaAMFyi  )  =  m%F_PtfmAM(2)/1000_ReKi
@@ -1054,12 +1063,12 @@ SUBROUTINE SetAllOuts( ParamData, OutData, m, ErrStat, ErrMsg )
    OutData%WriteOutput(  AqwaMyi  )  =  OutData%PtfmMesh%Moment(2,1)/1000_ReKi
    OutData%WriteOutput(  AqwaMzi  )  =  OutData%PtfmMesh%Moment(3,1)/1000_ReKi
 
-   OutData%WriteOutput(  AqwaHMFxi  )  =  m%PtfmFT(1)/1000_ReKi
-   OutData%WriteOutput(  AqwaHMFyi  )  =  m%PtfmFT(2)/1000_ReKi
-   OutData%WriteOutput(  AqwaHMFzi  )  =  m%PtfmFT(3)/1000_ReKi
-   OutData%WriteOutput(  AqwaHMMxi  )  =  m%PtfmFT(4)/1000_ReKi
-   OutData%WriteOutput(  AqwaHMMyi  )  =  m%PtfmFT(5)/1000_ReKi
-   OutData%WriteOutput(  AqwaHMMzi  )  =  m%PtfmFT(6)/1000_ReKi
+   OutData%WriteOutput(  AqwaHMFxi  )  =  m%A2Fast_PtfmFt(1)/1000_ReKi
+   OutData%WriteOutput(  AqwaHMFyi  )  =  m%A2Fast_PtfmFt(2)/1000_ReKi
+   OutData%WriteOutput(  AqwaHMFzi  )  =  m%A2Fast_PtfmFt(3)/1000_ReKi
+   OutData%WriteOutput(  AqwaHMMxi  )  =  m%A2Fast_PtfmFt(4)/1000_ReKi
+   OutData%WriteOutput(  AqwaHMMyi  )  =  m%A2Fast_PtfmFt(5)/1000_ReKi
+   OutData%WriteOutput(  AqwaHMMzi  )  =  m%A2Fast_PtfmFt(6)/1000_ReKi
 
    OutData%WriteOutput(  AqwaAMFxi  )  =  m%F_PtfmAM(1)/1000_ReKi
    OutData%WriteOutput(  AqwaAMFyi  )  =  m%F_PtfmAM(2)/1000_ReKi

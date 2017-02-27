@@ -24,7 +24,7 @@ SET Registry=..\..\bin\Registry_win32.exe
 
 SET Aqwa_Loc=%FAST_Loc%
 SET Aqwa_Reg_Loc=%Aqwa_Loc%\Registry
-SET NWTC_Lib_Loc=%FAST_Loc%\NWTC_Library
+SET NWTC_Lib_Loc=C:\NREL_CODES\NWTC_Library\trunk\source
 
 SET ED_Loc=%FAST_Loc%\dependencies\ElastoDyn
 SET BD_Loc=%FAST_Loc%\dependencies\BeamDyn

@@ -1,13 +1,13 @@
 !****************************************************************************
 !
-!  PROGRAM: OrcaDriver  - This program tests the OrcaFlex calling.
+!  PROGRAM: AqwaDriver  - This program tests the Aqwa calling.
 !
 !****************************************************************************
 !**********************************************************************************************************************************
 ! LICENSING
 ! Copyright (C) 2015  National Renewable Energy Laboratory
 !
-!    This file is part of Orca.
+!    This file is part of Aqwa.
 !
 ! Licensed under the Apache License, Version 2.0 (the "License");
 ! you may not use this file except in compliance with the License.
@@ -24,40 +24,40 @@
 !**********************************************************************************************************************************
 ! File last committed: $Date: 2014-07-29 13:30:04 -0600 (Tue, 29 Jul 2014) $
 ! (File) Revision #: $Rev: 173 $
-! URL: $HeadURL: https://wind-dev.nrel.gov/svn/OrcaFlexInterface/Trunk/Source/Driver/OrcaDriver.f90 $
+! URL: $HeadURL: https://wind-dev.nrel.gov/svn/AqwaInterface/Trunk/Source/Driver/AqwaDriver.f90 $
 !**********************************************************************************************************************************
 
-PROGRAM OrcaDriver
+PROGRAM AqwaDriver
 
    USE NWTC_Library
-   USE OrcaDriver_Types
-   USE OrcaDriver_Subs
-   USE OrcaFlexInterface
+   USE AqwaDriver_Types
+   USE AqwaDriver_Subs
+   USE AqwaInterface
 
    IMPLICIT NONE
 
       ! Info on this code
-   TYPE( ProgDesc ), PARAMETER                        :: ProgInfo = ProgDesc("Orca_Driver","v1.01.00a-adp","16-Dec-2015")
-   INTEGER(IntKi)                                     :: OrcaDriver_Verbose =  5  ! Verbose level.  0 = none, 5 = some, 10 = lots
+   TYPE( ProgDesc ), PARAMETER                        :: ProgInfo = ProgDesc("Aqwa_Driver","v1.01.00a-adp","16-Dec-2015")
+   INTEGER(IntKi)                                     :: AqwaDriver_Verbose =  5  ! Verbose level.  0 = none, 5 = some, 10 = lots
 
-      ! Types needed here (from Orca module)
-   TYPE(Orca_InitInputType)                     :: Orca_InitInp      ! Data for initialization -- this is where the input info goes
-   TYPE(Orca_InputType)                         :: Orca_u            ! input     -- contains xyz coords of interest -- set 1
-   TYPE(Orca_ParameterType)                     :: Orca_p            ! Parameters
-   TYPE(Orca_ContinuousStateType)               :: Orca_x            ! Continous State Data  (not used here)
-   TYPE(Orca_DiscreteStateType)                 :: Orca_xd           ! Discrete State Data   (not used here)
-   TYPE(Orca_ConstraintStateType)               :: Orca_z            ! Constraint State Data (not used here)
-   TYPE(Orca_OtherStateType)                    :: Orca_OtherState   ! Other State Data
-   TYPE(Orca_MiscVarType)                       :: Orca_m            ! Misc/optimization data
-   TYPE(Orca_OutputType)                        :: Orca_y            ! Output Data -- contains the velocities at xyz -- set 1
-   TYPE(Orca_InitOutputType)                    :: Orca_InitOut      ! Output Data -- contains the names and units
+      ! Types needed here (from Aqwa module)
+   TYPE(Aqwa_InitInputType)                     :: Aqwa_InitInp      ! Data for initialization -- this is where the input info goes
+   TYPE(Aqwa_InputType)                         :: Aqwa_u            ! input     -- contains xyz coords of interest -- set 1
+   TYPE(Aqwa_ParameterType)                     :: Aqwa_p            ! Parameters
+   TYPE(Aqwa_ContinuousStateType)               :: Aqwa_x            ! Continous State Data  (not used here)
+   TYPE(Aqwa_DiscreteStateType)                 :: Aqwa_xd           ! Discrete State Data   (not used here)
+   TYPE(Aqwa_ConstraintStateType)               :: Aqwa_z            ! Constraint State Data (not used here)
+   TYPE(Aqwa_OtherStateType)                    :: Aqwa_OtherState   ! Other State Data
+   TYPE(Aqwa_MiscVarType)                       :: Aqwa_m            ! Misc/optimization data
+   TYPE(Aqwa_OutputType)                        :: Aqwa_y            ! Output Data -- contains the velocities at xyz -- set 1
+   TYPE(Aqwa_InitOutputType)                    :: Aqwa_InitOut      ! Output Data -- contains the names and units
 
 
       ! Local variables for this code
-   TYPE(OrcaDriver_Flags)                             :: CLSettingsFlags         ! Flags indicating which command line arguments were specified
-   TYPE(OrcaDriver_Settings)                          :: CLSettings              ! Command line arguments passed in
-   TYPE(OrcaDriver_Flags)                             :: SettingsFlags           ! Flags indicating which settings were specified (includes CL and ipt file)
-   TYPE(OrcaDriver_Settings)                          :: Settings                ! Driver settings
+   TYPE(AqwaDriver_Flags)                             :: CLSettingsFlags         ! Flags indicating which command line arguments were specified
+   TYPE(AqwaDriver_Settings)                          :: CLSettings              ! Command line arguments passed in
+   TYPE(AqwaDriver_Flags)                             :: SettingsFlags           ! Flags indicating which settings were specified (includes CL and ipt file)
+   TYPE(AqwaDriver_Settings)                          :: Settings                ! Driver settings
    REAL(DbKi)                                         :: Timer(1:2)              ! Keep track of how long this takes to run
    REAL(DbKi)                                         :: TimeNow                 ! The current time
    INTEGER(IntKi)                                     :: NumTotalPoints          ! Number of points for this iteration
@@ -108,7 +108,7 @@ PROGRAM OrcaDriver
 
       ! Set some CLSettings to null/default values
    CLSettings%DvrIptFileName           =  ""             ! No input name name until set
-   CLSettings%OrcaIptFileName          =  ""             ! No Orca input file name until set
+   CLSettings%AqwaIptFileName          =  ""             ! No Aqwa input file name until set
    CLSettings%AddedMassFileName        =  ""             ! No summary file name until set
    CLSettings%DT                       =  0.0_DbKi
    CLSettings%PtfmCoord                =  0.0_ReKi       ! Set to origin
@@ -121,7 +121,7 @@ PROGRAM OrcaDriver
 
       ! Set some CLSettingsFlags to null/default values
    CLSettingsFlags%DvrIptFile          =  .FALSE.        ! Driver     input filename given as command line argument
-   CLSettingsFlags%OrcaIptFile         =  .FALSE.        ! Orca input filename given as command line argument
+   CLSettingsFlags%AqwaIptFile         =  .FALSE.        ! Aqwa input filename given as command line argument
    CLSettingsFlags%AddedMass           =  .FALSE.        ! create a summary at command line? (data extents in the wind file)
    CLSettingsFlags%Degrees             =  .FALSE.        ! Angles specified in degrees for PtfmCoord and PtfmVeloc
    CLSettingsFlags%PointsDegrees       =  .FALSE.        ! Angles specified in degrees in the points file
@@ -157,16 +157,16 @@ PROGRAM OrcaDriver
 
       ! Check if we are doing verbose error reporting
    IF ( CLSettingsFlags%VVerbose ) THEN
-      OrcaDriver_Verbose =  10_IntKi
+      AqwaDriver_Verbose =  10_IntKi
    ENDIF
    IF ( CLSettingsFlags%Verbose ) THEN
-      OrcaDriver_Verbose =  7_IntKi
+      AqwaDriver_Verbose =  7_IntKi
    ENDIF
 
 
 
       ! Verbose error reporting
-   IF ( OrcaDriver_Verbose >= 10_IntKi ) THEN
+   IF ( AqwaDriver_Verbose >= 10_IntKi ) THEN
       CALL WrScr('--- Settings from the command line: ---')
       CALL printSettings( CLSettingsFlags, CLSettings )
       CALL WrSCr(NewLine)
@@ -174,7 +174,7 @@ PROGRAM OrcaDriver
 
 
       ! Verbose error reporting
-   IF ( OrcaDriver_Verbose >= 10_IntKi ) THEN
+   IF ( AqwaDriver_Verbose >= 10_IntKi ) THEN
       CALL WrScr('--- Driver settings (before reading driver ipt file): ---')
       CALL printSettings( SettingsFlags, Settings )
       CALL WrScr(NewLine)
@@ -189,12 +189,12 @@ PROGRAM OrcaDriver
       SettingsFlags%DvrIptFile   =  CLSettingsFlags%DvrIptFile
       Settings%DvrIptFileName    =  CLSettings%DvrIptFileName
    ELSE
-      SettingsFlags%OrcaIptFile   =  CLSettingsFlags%OrcaIptFile
-      Settings%OrcaIptFileName    =  CLSettings%OrcaIptFileName
+      SettingsFlags%AqwaIptFile   =  CLSettingsFlags%AqwaIptFile
+      Settings%AqwaIptFileName    =  CLSettings%AqwaIptFileName
    ENDIF
 
 
-      ! If the filename given was not the Orca input file (-ifw option), then it is treated
+      ! If the filename given was not the Aqwa input file (-ifw option), then it is treated
       ! as the driver input file (flag should be set correctly by RetrieveArgs).  So, we must
       ! open this.
    IF ( SettingsFlags%DvrIptFile ) THEN
@@ -211,7 +211,7 @@ PROGRAM OrcaDriver
 
 
          ! VVerbose error reporting
-      IF ( OrcaDriver_Verbose >= 10_IntKi ) THEN
+      IF ( AqwaDriver_Verbose >= 10_IntKi ) THEN
          CALL WrScr(NewLine//'--- Driver settings after reading the driver ipt file: ---')
          CALL printSettings( SettingsFlags, Settings )
          CALL WrScr(NewLine)
@@ -219,7 +219,7 @@ PROGRAM OrcaDriver
 
 
          ! VVerbose error reporting
-      IF ( OrcaDriver_Verbose >= 10_IntKi ) CALL WrScr('Updating driver settings with command line arguments')
+      IF ( AqwaDriver_Verbose >= 10_IntKi ) CALL WrScr('Updating driver settings with command line arguments')
 
 
          ! Now that we have read in the driver input settings, we need to override these with any
@@ -235,7 +235,7 @@ PROGRAM OrcaDriver
       ENDIF
 
          ! Verbose error reporting
-      IF ( OrcaDriver_Verbose >= 10_IntKi ) THEN
+      IF ( AqwaDriver_Verbose >= 10_IntKi ) THEN
          CALL WrSCr(NewLine//'--- Driver settings after copying over CL settings: ---')
          CALL printSettings( SettingsFlags, Settings )
          CALL WrScr(NewLine)
@@ -246,7 +246,7 @@ PROGRAM OrcaDriver
 
 
          ! VVerbose error reporting
-      IF ( OrcaDriver_Verbose >= 10_IntKi ) CALL WrScr('No driver input file used. Updating driver settings with command line arguments')
+      IF ( AqwaDriver_Verbose >= 10_IntKi ) CALL WrScr('No driver input file used. Updating driver settings with command line arguments')
 
 
          ! Since there were no settings picked up from the driver input file, we need to copy over all
@@ -262,7 +262,7 @@ PROGRAM OrcaDriver
       ENDIF
 
          ! Verbose error reporting
-      IF ( OrcaDriver_Verbose >= 10_IntKi ) THEN
+      IF ( AqwaDriver_Verbose >= 10_IntKi ) THEN
          CALL WrScr(NewLine//'--- Driver settings after copying over CL settings: ---')
          CALL printSettings( SettingsFlags, Settings )
          CALL WrScr(NewLine)
@@ -310,25 +310,25 @@ PROGRAM OrcaDriver
       IF ( SettingsFlags%DvrIptFile )  THEN
          CALL GetRoot( Settings%DvrIptFileName, Settings%AddedMassFileName )
       ELSE
-         CALL GetRoot( Settings%OrcaIptFileName, Settings%AddedMassFileName )
+         CALL GetRoot( Settings%AqwaIptFileName, Settings%AddedMassFileName )
       ENDIF
 
       Settings%AddedMassFileName   =  TRIM(Settings%AddedMassFileName)//'.am'
 
-      IF ( OrcaDriver_Verbose >= 10_IntKi ) CALL WrScr('Driver summary output file: '//TRIM(Settings%AddedMassFileName))
+      IF ( AqwaDriver_Verbose >= 10_IntKi ) CALL WrScr('Driver summary output file: '//TRIM(Settings%AddedMassFileName))
 
    ENDIF
 
 
       ! Give status update of the driver flags, if verbose
-   IF ( OrcaDriver_Verbose >= 7_IntKi ) THEN
+   IF ( AqwaDriver_Verbose >= 7_IntKi ) THEN
       CALL WrScr(NewLine//'--- Driver settings after finalizing: ---')
       CALL printSettings( SettingsFlags, Settings )
       CALL WrScr(NewLine)
    ENDIF
 
 
-      ! Set the TMax value (this is a made up number just so that we have something we can pass to OrcaFlex
+      ! Set the TMax value (this is a made up number just so that we have something we can pass to Aqwa
    IF ( SettingsFlags%PointsFile ) THEN
       Settings%TMax  =  SIZE(PointsList,DIM=2)*Settings%DT
    ELSE
@@ -338,33 +338,33 @@ PROGRAM OrcaDriver
    !--------------------------------------------------------------------------------------------------------------------------------
    !-=-=- Initialize the Module -=-=-
    !--------------------------------------------------------------------------------------------------------------------------------
-   !  Initialize the Orca module --> it will initialize the DLL.
+   !  Initialize the Aqwa module --> it will initialize the DLL.
 
 
       ! Some initialization settings
-   Orca_InitInp%InputFile = Settings%OrcaIptFileName
-   CALL GetRoot( Orca_InitInp%InputFile, Orca_InitInp%RootName )      
-   Orca_InitInp%TMax             =  Settings%TMax
+   Aqwa_InitInp%InputFile = Settings%AqwaIptFileName
+   CALL GetRoot( Aqwa_InitInp%InputFile, Aqwa_InitInp%RootName )      
+   Aqwa_InitInp%TMax             =  Settings%TMax
   
 
-   IF ( OrcaDriver_Verbose >= 5_IntKi ) CALL WrScr('Calling Orca_Init...')
+   IF ( AqwaDriver_Verbose >= 5_IntKi ) CALL WrScr('Calling Aqwa_Init...')
 
 
-   CALL Orca_Init( Orca_InitInp, Orca_u, Orca_p, &
-               Orca_x, Orca_xd, Orca_z, Orca_OtherState, &
-               Orca_y, Orca_m, Settings%DT,  Orca_InitOut, ErrStat, ErrMsg )
+   CALL Aqwa_Init( Aqwa_InitInp, Aqwa_u, Aqwa_p, &
+               Aqwa_x, Aqwa_xd, Aqwa_z, Aqwa_OtherState, &
+               Aqwa_y, Aqwa_m, Settings%DT,  Aqwa_InitOut, ErrStat, ErrMsg )
 
 
       ! Make sure no errors occured that give us reason to terminate now.
    IF ( ErrStat >= AbortErrLev ) THEN
       CALL DriverCleanup()
       CALL ProgAbort( ErrMsg )
-   ELSEIF ( ( ErrStat /= ErrID_None ) .AND. ( OrcaDriver_Verbose >= 7_IntKi ) ) THEN
-      CALL WrScr(NewLine//' Orca_Init returned: ErrStat: '//TRIM(Num2LStr(ErrStat))//  &
+   ELSEIF ( ( ErrStat /= ErrID_None ) .AND. ( AqwaDriver_Verbose >= 7_IntKi ) ) THEN
+      CALL WrScr(NewLine//' Aqwa_Init returned: ErrStat: '//TRIM(Num2LStr(ErrStat))//  &
                  NewLine//'                     ErrMsg:  '//TRIM(ErrMsg)//NewLine)
       ErrStat  =  ErrID_None
       ErrMsg   =  ''
-   ELSEIF ( ( ErrStat /= ErrID_None ) .AND. ( OrcaDriver_Verbose < 7_IntKi ) ) THEN
+   ELSEIF ( ( ErrStat /= ErrID_None ) .AND. ( AqwaDriver_Verbose < 7_IntKi ) ) THEN
       CALL ProgWarn( ErrMsg )
       ErrStat  =  ErrID_None
       ErrMsg   =  ''
@@ -372,8 +372,8 @@ PROGRAM OrcaDriver
 
 
 
-      ! Let user know we returned from the Orca code if verbose
-   IF ( OrcaDriver_Verbose >= 5_IntKi ) CALL WrScr(NewLine//'Orca_Init CALL returned without errors.'//NewLine)
+      ! Let user know we returned from the Aqwa code if verbose
+   IF ( AqwaDriver_Verbose >= 5_IntKi ) CALL WrScr(NewLine//'Aqwa_Init CALL returned without errors.'//NewLine)
 
 
 
@@ -384,15 +384,15 @@ PROGRAM OrcaDriver
    !  Setup any additional things
 
 
-      ! Timestep -- The timestep for the calling Orca_CalcOutput may need to be changed to what is in the file if the
-      !  DT = DEFAULT option was used in the driver input file.  This does not need to be changed in the Orca_Parameters
-      !  since Orca doesn't care what the timestep is.
+      ! Timestep -- The timestep for the calling Aqwa_CalcOutput may need to be changed to what is in the file if the
+      !  DT = DEFAULT option was used in the driver input file.  This does not need to be changed in the Aqwa_Parameters
+      !  since Aqwa doesn't care what the timestep is.
 
    IF ( SettingsFlags%DTDefault ) THEN
 
          Settings%DT =  0.025_ReKi
 
-         IF ( OrcaDriver_Verbose >= 5 ) CALL WrScr(' DEFAULT requested for DT. Setting to 0.025 for arbitrary reasons (the developer picked some random number here).')
+         IF ( AqwaDriver_Verbose >= 5 ) CALL WrScr(' DEFAULT requested for DT. Setting to 0.025 for arbitrary reasons (the developer picked some random number here).')
 
    ENDIF
 
@@ -404,28 +404,28 @@ PROGRAM OrcaDriver
    !--------------------------------------------------------------------------------------------------------------------------------
 
 
-   IF ( OrcaDriver_Verbose >= 5_IntKi )    CALL WrScr(NewLine//'Calling Orca_CalcOutput...'//NewLine)
+   IF ( AqwaDriver_Verbose >= 5_IntKi )    CALL WrScr(NewLine//'Calling Aqwa_CalcOutput...'//NewLine)
 
 
    IF ( SettingsFlags%PointsFile ) THEN
       DO I=1,SIZE(PointsList,DIM=2)
 
             ! Setup the mesh coordinates (columns 1-6)
-         Orca_u%PtfmMesh%TranslationDisp(:,1)   =  PointsList(1:3,I)
+         Aqwa_u%PtfmMesh%TranslationDisp(:,1)   =  PointsList(1:3,I)
 
             ! Compute direction cosine matrix from the rotation angles
          CALL SmllRotTrans( 'InputRotation', PointsList(4,I), PointsList(5,I), PointsList(6,I), CosineMatrix, 'CosineMatrix calc', ErrStat, ErrMsg )
-         Orca_u%PtfmMesh%Orientation(:,:,1)     =  CosineMatrix
+         Aqwa_u%PtfmMesh%Orientation(:,:,1)     =  CosineMatrix
 
 
             ! Setup the velocity terms of the mesh (columns 7:12) 
-         Orca_u%PtfmMesh%TranslationVel(:,1)    =  VelocList(1:3,I)
-         Orca_u%PtfmMesh%RotationVel(:,1)       =  VelocList(4:6,I)
+         Aqwa_u%PtfmMesh%TranslationVel(:,1)    =  VelocList(1:3,I)
+         Aqwa_u%PtfmMesh%RotationVel(:,1)       =  VelocList(4:6,I)
 
 
             ! Setup the Acceleration terms of the mesh (columns 13:18)
-         Orca_u%PtfmMesh%TranslationAcc(:,1)    =  AccelList(1:3,I)
-         Orca_u%PtfmMesh%RotationAcc(:,1)       =  AccelList(4:6,I)
+         Aqwa_u%PtfmMesh%TranslationAcc(:,1)    =  AccelList(1:3,I)
+         Aqwa_u%PtfmMesh%RotationAcc(:,1)       =  AccelList(4:6,I)
 
 
          TimeNow  =  TimeList(I)
@@ -435,14 +435,14 @@ PROGRAM OrcaDriver
 
 
 
-            ! Get results for Points data from Orca
-         CALL Orca_CalcOutput( TimeNow,  Orca_u, Orca_p, &
-                  Orca_x, Orca_xd, Orca_z, Orca_OtherState, &
-                  Orca_y, Orca_m, ErrStat, ErrMsg)
+            ! Get results for Points data from Aqwa
+         CALL Aqwa_CalcOutput( TimeNow,  Aqwa_u, Aqwa_p, &
+                  Aqwa_x, Aqwa_xd, Aqwa_z, Aqwa_OtherState, &
+                  Aqwa_y, Aqwa_m, ErrStat, ErrMsg)
 
 !debug_print_unit = 80
 !call WrNumAryFileNR(debug_print_unit,(/TimeNow/), "1x,ES15.5E3", ErrStat, ErrMsg  )
-!call WrNumAryFileNR(debug_print_unit,Orca_y%WriteOutput, "1x,ES15.5E3", ErrStat, ErrMsg  ) 
+!call WrNumAryFileNR(debug_print_unit,Aqwa_y%WriteOutput, "1x,ES15.5E3", ErrStat, ErrMsg  ) 
 !write(debug_print_unit,'()')
 
 
@@ -451,12 +451,12 @@ PROGRAM OrcaDriver
          IF ( ErrStat >= AbortErrLev ) THEN
             CALL DriverCleanup()
             CALL ProgAbort( ErrMsg )
-         ELSEIF ( ( ErrStat /= ErrID_None ) .AND. ( OrcaDriver_Verbose >= 7_IntKi ) ) THEN
-            CALL WrScr(NewLine//' Orca_Calc returned: ErrStat: '//TRIM(Num2LStr(ErrStat))//  &
+         ELSEIF ( ( ErrStat /= ErrID_None ) .AND. ( AqwaDriver_Verbose >= 7_IntKi ) ) THEN
+            CALL WrScr(NewLine//' Aqwa_Calc returned: ErrStat: '//TRIM(Num2LStr(ErrStat))//  &
                        NewLine//'                      ErrMsg:  '//TRIM(ErrMsg)//NewLine)
             ErrStat  =  ErrID_None
             ErrMsg   =  ''
-         ELSEIF ( ( ErrStat /= ErrID_None ) .AND. ( OrcaDriver_Verbose < 7_IntKi ) ) THEN
+         ELSEIF ( ( ErrStat /= ErrID_None ) .AND. ( AqwaDriver_Verbose < 7_IntKi ) ) THEN
             CALL ProgWarn( ErrMsg )
             ErrStat  =  ErrID_None
             ErrMsg   =  ''
@@ -466,7 +466,7 @@ PROGRAM OrcaDriver
             ! Output the Points results for this timestep
          CALL PointsForce_OutputWrite( Settings%ProgInfo, Settings%PointsOutputUnit, Settings%PointsOutputName, Settings%PointsFileName,  &
                      SettingsFlags%PointsOutputInit, SettingsFlags%PointsDegrees, SIZE(PointsList,DIM=2),                                  &
-                     TimeNow, Orca_InitOut, Orca_p, Orca_u, Orca_y, ErrStat, ErrMsg )
+                     TimeNow, Aqwa_InitOut, Aqwa_p, Aqwa_u, Aqwa_y, ErrStat, ErrMsg )
          
          IF ( ErrStat >= AbortErrLev ) THEN
             CALL DriverCleanup()
@@ -481,40 +481,40 @@ PROGRAM OrcaDriver
    IF ( SettingsFlags%PtfmCoord ) THEN
 
             ! Setup the mesh coordinates (columns 1-6) for the coordinate specified
-         Orca_u%PtfmMesh%TranslationDisp(:,1)   =  Settings%PtfmCoord(1:3)
+         Aqwa_u%PtfmMesh%TranslationDisp(:,1)   =  Settings%PtfmCoord(1:3)
 
             ! Compute direction cosine matrix from the rotation angles
          CALL SmllRotTrans( 'InputRotation', Settings%PtfmCoord(4), Settings%PtfmCoord(5), Settings%PtfmCoord(6), CosineMatrix, 'CosineMatrix calc', ErrStat, ErrMsg )
-         Orca_u%PtfmMesh%Orientation(:,:,1)     =  CosineMatrix
+         Aqwa_u%PtfmMesh%Orientation(:,:,1)     =  CosineMatrix
 
 
             ! Setup the velocity terms of the mesh (columns 7:12) 
-         Orca_u%PtfmMesh%TranslationVel(:,1)    =  Settings%PtfmVeloc(1:3)
-         Orca_u%PtfmMesh%RotationVel(:,1)       =  Settings%PtfmVeloc(4:6)
+         Aqwa_u%PtfmMesh%TranslationVel(:,1)    =  Settings%PtfmVeloc(1:3)
+         Aqwa_u%PtfmMesh%RotationVel(:,1)       =  Settings%PtfmVeloc(4:6)
 
 
             ! Setup the Acceleration terms of the mesh (columns 13:18)
-         Orca_u%PtfmMesh%TranslationAcc(:,1)    =  Settings%PtfmAccel(1:3)
-         Orca_u%PtfmMesh%RotationAcc(:,1)       =  Settings%PtfmAccel(4:6)
+         Aqwa_u%PtfmMesh%TranslationAcc(:,1)    =  Settings%PtfmAccel(1:3)
+         Aqwa_u%PtfmMesh%RotationAcc(:,1)       =  Settings%PtfmAccel(4:6)
 
          TimeNow  =  Settings%DT
 
-            ! Get results for Points data from Orca
-         CALL Orca_CalcOutput( TimeNow,  Orca_u, Orca_p, &
-                  Orca_x, Orca_xd, Orca_z, Orca_OtherState, &
-                  Orca_y, Orca_m, ErrStat, ErrMsg)
+            ! Get results for Points data from Aqwa
+         CALL Aqwa_CalcOutput( TimeNow,  Aqwa_u, Aqwa_p, &
+                  Aqwa_x, Aqwa_xd, Aqwa_z, Aqwa_OtherState, &
+                  Aqwa_y, Aqwa_m, ErrStat, ErrMsg)
 
 
             ! Make sure no errors occured that give us reason to terminate now.
          IF ( ErrStat >= AbortErrLev ) THEN
             CALL DriverCleanup()
             CALL ProgAbort( ErrMsg )
-         ELSEIF ( ( ErrStat /= ErrID_None ) .AND. ( OrcaDriver_Verbose >= 7_IntKi ) ) THEN
-            CALL WrScr(NewLine//' Orca_Calc returned: ErrStat: '//TRIM(Num2LStr(ErrStat))//  &
+         ELSEIF ( ( ErrStat /= ErrID_None ) .AND. ( AqwaDriver_Verbose >= 7_IntKi ) ) THEN
+            CALL WrScr(NewLine//' Aqwa_Calc returned: ErrStat: '//TRIM(Num2LStr(ErrStat))//  &
                        NewLine//'                      ErrMsg:  '//TRIM(ErrMsg)//NewLine)
             ErrStat  =  ErrID_None
             ErrMsg   =  ''
-         ELSEIF ( ( ErrStat /= ErrID_None ) .AND. ( OrcaDriver_Verbose < 7_IntKi ) ) THEN
+         ELSEIF ( ( ErrStat /= ErrID_None ) .AND. ( AqwaDriver_Verbose < 7_IntKi ) ) THEN
             CALL ProgWarn( ErrMsg )
             ErrStat  =  ErrID_None
             ErrMsg   =  ''
@@ -532,19 +532,19 @@ PROGRAM OrcaDriver
 
             ! Call routine to write the output file for this one point
          CALL PointsForce_OutputWrite( Settings%ProgInfo, TmpUnit, TmpChar, TmpChar, TmpFlag, SettingsFlags%Degrees, 0,   &
-                     TimeNow, Orca_InitOut, Orca_p, Orca_u, Orca_y, ErrStat, ErrMsg )
+                     TimeNow, Aqwa_InitOut, Aqwa_p, Aqwa_u, Aqwa_y, ErrStat, ErrMsg )
          CLOSE(TmpUnit)
 
             ! Make sure no errors occured that give us reason to terminate now.
          IF ( ErrStat >= AbortErrLev ) THEN
             CALL DriverCleanup()
             CALL ProgAbort( ErrMsg )
-         ELSEIF ( ( ErrStat /= ErrID_None ) .AND. ( OrcaDriver_Verbose >= 7_IntKi ) ) THEN
+         ELSEIF ( ( ErrStat /= ErrID_None ) .AND. ( AqwaDriver_Verbose >= 7_IntKi ) ) THEN
             CALL WrScr(NewLine//' PointsForce_OutputWrite: ErrStat: '//TRIM(Num2LStr(ErrStat))//  &
                        NewLine//'                          ErrMsg:  '//TRIM(ErrMsg)//NewLine)
             ErrStat  =  ErrID_None
             ErrMsg   =  ''
-         ELSEIF ( ( ErrStat /= ErrID_None ) .AND. ( OrcaDriver_Verbose < 7_IntKi ) ) THEN
+         ELSEIF ( ( ErrStat /= ErrID_None ) .AND. ( AqwaDriver_Verbose < 7_IntKi ) ) THEN
             CALL ProgWarn( ErrMsg )
             ErrStat  =  ErrID_None
             ErrMsg   =  ''
@@ -553,7 +553,7 @@ PROGRAM OrcaDriver
    ENDIF
 
       ! Verbose error reporting
-   IF ( OrcaDriver_Verbose >= 10_IntKi ) THEN
+   IF ( AqwaDriver_Verbose >= 10_IntKi ) THEN
       CALL WrScr(NewLine//'--- Driver settings after CalcOutput call: ---')
       CALL printSettings( SettingsFlags, Settings )
       CALL WrScr(NewLine)
@@ -575,24 +575,24 @@ PROGRAM OrcaDriver
 
       ! AddedMass output to command line
    IF ( SettingsFlags%AddedMass ) THEN
-      CALL AddedMassMessage( Orca_m%PtfmAM, .FALSE., ErrMsgTmp, LenErrMsgTmp )         ! .FALSE. for no comment characters.  ErrMsgTmp holds the message.
+      CALL AddedMassMessage( Aqwa_m%A2Fast_PtfmAM, .FALSE., ErrMsgTmp, LenErrMsgTmp )         ! .FALSE. for no comment characters.  ErrMsgTmp holds the message.
       CALL WrScr(NewLine//TRIM(ErrMsgTmp)//NewLine)
    ENDIF
 
       ! AddedMass output to file
    IF ( SettingsFlags%AddedMassFile ) THEN
       CALL AddedMass_OutputWrite( Settings, SettingsFlags%AddedMassOutputInit, &
-            Orca_m%PtfmAM, ErrStat, ErrMsg )
+            Aqwa_m%A2Fast_PtfmAM, ErrStat, ErrMsg )
          ! Make sure no errors occured that give us reason to terminate now.
       IF ( ErrStat >= AbortErrLev ) THEN
          CALL DriverCleanup()
          CALL ProgAbort( ErrMsg )
-      ELSEIF ( ( ErrStat /= ErrID_None ) .AND. ( OrcaDriver_Verbose >= 7_IntKi ) ) THEN
+      ELSEIF ( ( ErrStat /= ErrID_None ) .AND. ( AqwaDriver_Verbose >= 7_IntKi ) ) THEN
          CALL WrScr(NewLine//' AddedMass_OutputWrite ErrStat: '//TRIM(Num2LStr(ErrStat))//  &
                     NewLine//'                       ErrMsg:  '//TRIM(ErrMsg)//NewLine)
          ErrStat  =  ErrID_None
          ErrMsg   =  ''
-      ELSEIF ( ( ErrStat /= ErrID_None ) .AND. ( OrcaDriver_Verbose < 7_IntKi ) ) THEN
+      ELSEIF ( ( ErrStat /= ErrID_None ) .AND. ( AqwaDriver_Verbose < 7_IntKi ) ) THEN
          CALL ProgWarn( ErrMsg )
          ErrStat  =  ErrID_None
          ErrMsg   =  ''
@@ -605,27 +605,27 @@ PROGRAM OrcaDriver
    !-=-=- We are done, so close everything down -=-=-
    !--------------------------------------------------------------------------------------------------------------------------------
 
-   CALL Orca_DestroyInitOutput( Orca_InitOut,    ErrStat, ErrMsg )
+   CALL Aqwa_DestroyInitOutput( Aqwa_InitOut,    ErrStat, ErrMsg )
 
-   CALL Orca_End( Orca_u, Orca_p, &
-                  Orca_x, Orca_xd, Orca_z, Orca_OtherState, &
-                  Orca_y, Orca_m,  ErrStat, ErrMsg )
+   CALL Aqwa_End( Aqwa_u, Aqwa_p, &
+                  Aqwa_x, Aqwa_xd, Aqwa_z, Aqwa_OtherState, &
+                  Aqwa_y, Aqwa_m,  ErrStat, ErrMsg )
 
       ! Make sure no errors occured that give us reason to terminate now.
    IF ( ErrStat >= AbortErrLev ) THEN
       CALL DriverCleanup()
       CALL ProgAbort( ErrMsg )
-   ELSEIF ( ( ErrStat /= ErrID_None ) .AND. ( OrcaDriver_Verbose >= 7_IntKi ) ) THEN
-      CALL WrScr(NewLine//' Orca_End returned: ErrStat: '//TRIM(Num2LStr(ErrStat))//  &
+   ELSEIF ( ( ErrStat /= ErrID_None ) .AND. ( AqwaDriver_Verbose >= 7_IntKi ) ) THEN
+      CALL WrScr(NewLine//' Aqwa_End returned: ErrStat: '//TRIM(Num2LStr(ErrStat))//  &
                  NewLine//'                     ErrMsg:  '//TRIM(ErrMsg)//NewLine)
       ErrStat  =  ErrID_None
       ErrMsg   =  ''
-   ELSEIF ( ( ErrStat /= ErrID_None ) .AND. ( OrcaDriver_Verbose < 7_IntKi ) ) THEN
+   ELSEIF ( ( ErrStat /= ErrID_None ) .AND. ( AqwaDriver_Verbose < 7_IntKi ) ) THEN
       CALL ProgWarn( ErrMsg )
       ErrStat  =  ErrID_None
       ErrMsg   =  ''
-   ELSEIF ( OrcaDriver_Verbose >= 7_IntKi ) THEN
-      CALL WrScr(NewLine//' Orca_End call:    ok')
+   ELSEIF ( AqwaDriver_Verbose >= 7_IntKi ) THEN
+      CALL WrScr(NewLine//' Aqwa_End call:    ok')
    ENDIF
 
 
@@ -648,7 +648,7 @@ CONTAINS
    END SUBROUTINE DriverCleanup
 
 
-END PROGRAM OrcaDriver
+END PROGRAM AqwaDriver
 
 
 

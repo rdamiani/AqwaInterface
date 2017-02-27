@@ -1,13 +1,13 @@
 !**********************************************************************************************************************************
 !
-!  MODULE: OrcaDriver_Subs  - This module contains subroutines used by the OrcaFlexInterface Driver program
+!  MODULE: AqwaDriver_Subs  - This module contains subroutines used by the AqwaInterface Driver program
 !
 !**********************************************************************************************************************************
 !**********************************************************************************************************************************
 ! LICENSING
 ! Copyright (C) 2015  National Renewable Energy Laboratory
 !
-!    This file is part of OrcaFlexInterface.
+!    This file is part of AqwaInterface.
 !
 ! Licensed under the Apache License, Version 2.0 (the "License");
 ! you may not use this file except in compliance with the License.
@@ -24,12 +24,12 @@
 !**********************************************************************************************************************************
 ! File last committed: $Date: 2014-07-29 13:30:04 -0600 (Tue, 29 Jul 2014) $
 ! (File) Revision #: $Rev: 169 $
-! URL: $HeadURL: https://wind-dev.nrel.gov/svn/OrcaFlexInterface/Trunk/Source/Driver/OrcaDriver_Subs.f90 $
+! URL: $HeadURL: https://wind-dev.nrel.gov/svn/AqwaInterface/Trunk/Source/Driver/AqwaDriver_Subs.f90 $
 !**********************************************************************************************************************************
-MODULE OrcaDriver_Subs
+MODULE AqwaDriver_Subs
 
    USE NWTC_Library
-   USE OrcaDriver_Types
+   USE AqwaDriver_Types
    IMPLICIT NONE
 
 
@@ -87,13 +87,13 @@ END SUBROUTINE DispHelpText
 SUBROUTINE RetrieveArgs( CLSettings, CLFlags, ErrStat, ErrMsg )
 
    USE NWTC_Library
-   USE OrcaDriver_Types
+   USE AqwaDriver_Types
 
    IMPLICIT NONE
 
       ! Storing the arguments
-   TYPE( OrcaDriver_Flags ),            INTENT(  OUT)  :: CLFlags      !< Flags indicating which command line arguments were specified
-   TYPE( OrcaDriver_Settings ),         INTENT(  OUT)  :: CLSettings           !< Command line arguments passed in
+   TYPE( AqwaDriver_Flags ),            INTENT(  OUT)  :: CLFlags      !< Flags indicating which command line arguments were specified
+   TYPE( AqwaDriver_Settings ),         INTENT(  OUT)  :: CLSettings           !< Command line arguments passed in
 
       ! Error Handling
    INTEGER(IntKi),                     INTENT(  OUT)  :: ErrStat
@@ -228,14 +228,14 @@ SUBROUTINE RetrieveArgs( CLSettings, CLFlags, ErrStat, ErrMsg )
          !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-!
 
       USE NWTC_Library
-      USE OrcaDriver_Types
-      USE OrcaFlexInterface_Types
+      USE AqwaDriver_Types
+      USE AqwaInterface_Types
 
       IMPLICIT NONE
 
          ! Storing the arguments
-      TYPE( OrcaDriver_Flags ),            INTENT(INOUT)  :: CLFlags      ! Flags indicating which arguments were specified
-      TYPE( OrcaDriver_Settings ),         INTENT(INOUT)  :: CLSettings           ! Arguments passed in
+      TYPE( AqwaDriver_Flags ),            INTENT(INOUT)  :: CLFlags      ! Flags indicating which arguments were specified
+      TYPE( AqwaDriver_Settings ),         INTENT(INOUT)  :: CLSettings           ! Arguments passed in
 
       CHARACTER(*),                       INTENT(IN   )  :: ThisArgUC            ! The current argument (upper case for testing)
       CHARACTER(*),                       INTENT(IN   )  :: ThisArg              ! The current argument (as passed in for error messages)
@@ -289,7 +289,7 @@ SUBROUTINE RetrieveArgs( CLSettings, CLFlags, ErrStat, ErrMsg )
 
          ! If no delimeters were given, than this option is simply a flag
       IF ( Delim1 == 0_IntKi ) THEN
-            ! check to see if the filename is the name of the Orca input file
+            ! check to see if the filename is the name of the Aqwa input file
          IF       ( ThisArgUC(1:13)== "POINTSDEGREES" )  THEN
             CLFlags%PointsDegrees   = .TRUE.
             RETURN
@@ -753,20 +753,20 @@ END SUBROUTINE RetrieveArgs
 SUBROUTINE ReadDvrIptFile( DvrFileName, DvrFlags, DvrSettings, ProgInfo, ErrStat, ErrMsg )
 
    CHARACTER(1024),                    INTENT(IN   )  :: DvrFileName
-   TYPE(OrcaDriver_Flags),             INTENT(INOUT)  :: DvrFlags
-   TYPE(OrcaDriver_Settings),          INTENT(INOUT)  :: DvrSettings
+   TYPE(AqwaDriver_Flags),             INTENT(INOUT)  :: DvrFlags
+   TYPE(AqwaDriver_Settings),          INTENT(INOUT)  :: DvrSettings
    TYPE(ProgDesc),                     INTENT(IN   )  :: ProgInfo
    INTEGER(IntKi),                     INTENT(  OUT)  :: ErrStat              ! returns a non-zero value when an error occurs
    CHARACTER(*),                       INTENT(  OUT)  :: ErrMsg               ! Error message if ErrStat /= ErrID_None
 
       ! Local variables
    INTEGER(IntKi)                                     :: UnIn                 ! Unit number for the driver input file
-   CHARACTER(1024)                                    :: FileName             ! Name of OrcaFlexInterface driver input file
+   CHARACTER(1024)                                    :: FileName             ! Name of AqwaInterface driver input file
 
       ! Input file echoing
    LOGICAL                                            :: EchoFileContents     ! Do we echo the driver file out or not?
    INTEGER(IntKi)                                     :: UnEchoLocal          ! The local unit number for this module's echo file
-   CHARACTER(1024)                                    :: EchoFileName         ! Name of OrcaFlexInterface driver echo file
+   CHARACTER(1024)                                    :: EchoFileName         ! Name of AqwaInterface driver echo file
 
       ! Time steps
    CHARACTER(1024)                                    :: DTChr                ! Character string for timesteps size (to handle DEFAULT value)
@@ -791,14 +791,14 @@ SUBROUTINE ReadDvrIptFile( DvrFileName, DvrFlags, DvrSettings, ProgInfo, ErrStat
    ENDIF
 
 
-   CALL WrScr( 'Opening OrcaFlexInterface Driver input file:  '//FileName )
+   CALL WrScr( 'Opening AqwaInterface Driver input file:  '//FileName )
 
 
    !-------------------------------------------------------------------------------------------------
    ! File header
    !-------------------------------------------------------------------------------------------------
 
-   CALL ReadCom( UnIn, FileName,' OrcaFlexInterface Driver input file header line 1', ErrStatTmp, ErrMsgTmp )
+   CALL ReadCom( UnIn, FileName,' AqwaInterface Driver input file header line 1', ErrStatTmp, ErrMsgTmp )
    IF ( ErrStatTmp /= ErrID_None ) THEN
       CALL SetErrStat(ErrID_Fatal,ErrMsgTmp,ErrStat,ErrMsg,RoutineName)
       CLOSE( UnIn )
@@ -806,7 +806,7 @@ SUBROUTINE ReadDvrIptFile( DvrFileName, DvrFlags, DvrSettings, ProgInfo, ErrStat
    ENDIF
 
 
-   CALL ReadCom( UnIn, FileName, 'OrcaFlexInterface Driver input file header line 2', ErrStatTmp, ErrMsgTmp )
+   CALL ReadCom( UnIn, FileName, 'AqwaInterface Driver input file header line 2', ErrStatTmp, ErrMsgTmp )
    IF ( ErrStatTmp /= ErrID_None ) THEN
       CALL SetErrStat(ErrID_Fatal,ErrMsgTmp,ErrStat,ErrMsg,RoutineName)
       CLOSE( UnIn )
@@ -843,7 +843,7 @@ SUBROUTINE ReadDvrIptFile( DvrFileName, DvrFlags, DvrSettings, ProgInfo, ErrStat
 
 
          ! Reread and echo
-      CALL ReadCom( UnIn, FileName,' OrcaFlexInterface Driver input file header line 1', ErrStatTmp, ErrMsgTmp, UnEchoLocal )
+      CALL ReadCom( UnIn, FileName,' AqwaInterface Driver input file header line 1', ErrStatTmp, ErrMsgTmp, UnEchoLocal )
       IF ( ErrStatTmp /= ErrID_None ) THEN
          CALL SetErrStat(ErrID_Fatal,ErrMsgTmp,ErrStat,ErrMsg,RoutineName)
          CALL CleanupEchoFile( EchoFileContents, UnEchoLocal )
@@ -852,7 +852,7 @@ SUBROUTINE ReadDvrIptFile( DvrFileName, DvrFlags, DvrSettings, ProgInfo, ErrStat
       ENDIF
 
 
-      CALL ReadCom( UnIn, FileName, 'OrcaFlexInterface Driver input file header line 2', ErrStatTmp, ErrMsgTmp, UnEchoLocal )
+      CALL ReadCom( UnIn, FileName, 'AqwaInterface Driver input file header line 2', ErrStatTmp, ErrMsgTmp, UnEchoLocal )
       IF ( ErrStatTmp /= ErrID_None ) THEN
          CALL SetErrStat(ErrID_Fatal,ErrMsgTmp,ErrStat,ErrMsg,RoutineName)
          CALL CleanupEchoFile( EchoFileContents, UnEchoLocal )
@@ -876,11 +876,11 @@ SUBROUTINE ReadDvrIptFile( DvrFileName, DvrFlags, DvrSettings, ProgInfo, ErrStat
 
 
    !-------------------------------------------------------------------------------------------------
-   !  OrcaFlexInterface setup section
+   !  AqwaInterface setup section
    !-------------------------------------------------------------------------------------------------
 
       ! Header
-   CALL ReadCom( UnIn, FileName,' OrcaFlexInterface setup section, comment line', ErrStatTmp, ErrMsgTmp, UnEchoLocal )
+   CALL ReadCom( UnIn, FileName,' AqwaInterface setup section, comment line', ErrStatTmp, ErrMsgTmp, UnEchoLocal )
    IF ( ErrStatTmp /= ErrID_None ) THEN
       CALL SetErrStat(ErrID_Fatal,ErrMsgTmp,ErrStat,ErrMsg,RoutineName)
       CALL CleanupEchoFile( EchoFileContents, UnEchoLocal )
@@ -918,8 +918,8 @@ SUBROUTINE ReadDvrIptFile( DvrFileName, DvrFlags, DvrSettings, ProgInfo, ErrStat
    ENDIF
 
 
-      ! OrcaFlexInterface input file
-   CALL ReadVar( UnIn, FileName,DvrSettings%OrcaIptFileName,'OrcaIptFileName',' OrcaFlexInterface input filename',   &
+      ! AqwaInterface input file
+   CALL ReadVar( UnIn, FileName,DvrSettings%AqwaIptFileName,'AqwaIptFileName',' AqwaInterface input filename',   &
       ErrStatTmp,ErrMsgTmp, UnEchoLocal )
    IF ( ErrStatTmp /= ErrID_None ) THEN
       CALL SetErrStat(ErrID_Fatal,ErrMsgTmp,ErrStat,ErrMsg,RoutineName)
@@ -927,7 +927,7 @@ SUBROUTINE ReadDvrIptFile( DvrFileName, DvrFlags, DvrSettings, ProgInfo, ErrStat
       CLOSE( UnIn )
       RETURN
    ELSE
-      DvrFlags%OrcaIptFile  =  .TRUE.
+      DvrFlags%AqwaIptFile  =  .TRUE.
    ENDIF
 
 
@@ -1167,10 +1167,10 @@ END SUBROUTINE ReadDvrIptFile
 !! issued if anything is changed from what the driver input file requested.
 SUBROUTINE UpdateSettingsWithCL( DvrFlags, DvrSettings, CLFlags, CLSettings, DVRIPT, ErrStat, ErrMsg )
 
-   TYPE(OrcaDriver_Flags),             INTENT(INOUT)  :: DvrFlags
-   TYPE(OrcaDriver_Settings),          INTENT(INOUT)  :: DvrSettings
-   TYPE(OrcaDriver_Flags),             INTENT(IN   )  :: CLFlags
-   TYPE(OrcaDriver_Settings),          INTENT(IN   )  :: CLSettings
+   TYPE(AqwaDriver_Flags),             INTENT(INOUT)  :: DvrFlags
+   TYPE(AqwaDriver_Settings),          INTENT(INOUT)  :: DvrSettings
+   TYPE(AqwaDriver_Flags),             INTENT(IN   )  :: CLFlags
+   TYPE(AqwaDriver_Settings),          INTENT(IN   )  :: CLSettings
    LOGICAL,                            INTENT(IN   )  :: DVRIPT
    INTEGER(IntKi),                     INTENT(  OUT)  :: ErrStat
    CHARACTER(*),                       INTENT(  OUT)  :: ErrMsg
@@ -1320,9 +1320,9 @@ SUBROUTINE UpdateSettingsWithCL( DvrFlags, DvrSettings, CLFlags, CLSettings, DVR
    ENDIF
 
 
-      ! If no DT value has been set (DEFAULT requested), we need to set a default to pass into Orca
+      ! If no DT value has been set (DEFAULT requested), we need to set a default to pass into Aqwa
    IF ( .NOT. DvrFlags%DT ) THEN
-      DvrSettings%DT =  0.025_DbKi     ! This value gets passed into the Orca_Init routine, so something must be set.
+      DvrSettings%DT =  0.025_DbKi     ! This value gets passed into the Aqwa_Init routine, so something must be set.
       DvrFlags%DT    =  .TRUE.
    ENDIF
 
@@ -1837,7 +1837,7 @@ END SUBROUTINE AddedMassMessage
 !> This subroutine writes the Added Mass matrix to a file
 SUBROUTINE AddedMass_OutputWrite (DvrSettings, Initialized, PtfmAM, ErrStat, ErrMsg)
 
-   TYPE( OrcaDriver_Settings ),        INTENT(INOUT)  :: DvrSettings          !< Stored settings
+   TYPE( AqwaDriver_Settings ),        INTENT(INOUT)  :: DvrSettings          !< Stored settings
    LOGICAL,                            INTENT(INOUT)  :: Initialized          !< Was this file started before?
    REAL(ReKi),                         INTENT(IN   )  :: PtfmAM(6,6)          !< The added mass matrix
    INTEGER(IntKi),                     INTENT(  OUT)  :: ErrStat              !< returns a non-zero value when an error occurs
@@ -1874,7 +1874,7 @@ SUBROUTINE AddedMass_OutputWrite (DvrSettings, Initialized, PtfmAM, ErrStat, Err
          ! Write header section
       WRITE( DvrSettings%AddedMassOutputUnit,'(A)', IOSTAT=ErrStatTmp )   '## This file was generated by '//TRIM(GetNVD(DvrSettings%ProgInfo))//  &
             ' on '//CurDate()//' at '//CurTime()//'.'
-      WRITE( DvrSettings%AddedMassOutputUnit,'(A)', IOSTAT=ErrStatTmp )   '## This file contains the added mass matrix that is returned from OrcaFlex'
+      WRITE( DvrSettings%AddedMassOutputUnit,'(A)', IOSTAT=ErrStatTmp )   '## This file contains the added mass matrix that is returned from Aqwa'
       WRITE (DvrSettings%AddedMassOutputUnit,'(A)', IOSTAT=ErrStatTmp  )  '## It is arranged in a 6x6 matrix'
       WRITE (DvrSettings%AddedMassOutputUnit,'(A)', IOSTAT=ErrStatTmp  )  '# '
       CALL AddedMassMessage( PtfmAM, .FALSE., ErrMsgTmp, LenErrMsgTmp )
@@ -1898,10 +1898,10 @@ SUBROUTINE PointsForce_OutputWrite(ProgInfo, OutUnit, OutFileName, InputFileName
    LOGICAL,                            INTENT(IN   )  :: AnglesInDegrees      !< The angles are in degrees.
    INTEGER(IntKi),                     INTENT(IN   )  :: TotalPoints          !< The total number of points in the points file
    REAL(DbKi),                         INTENT(IN   )  :: Time                 !< Current time
-   TYPE(Orca_InitOutputType),          INTENT(IN   )  :: InitOutData          !< InitOutData -- need the header info
-   TYPE(Orca_ParameterType),           INTENT(IN   )  :: p                    !< p
-   TYPE(Orca_InputType),               INTENT(IN   )  :: u                    !< u
-   TYPE(Orca_OutputType),              INTENT(IN   )  :: y                    !< y
+   TYPE(Aqwa_InitOutputType),          INTENT(IN   )  :: InitOutData          !< InitOutData -- need the header info
+   TYPE(Aqwa_ParameterType),           INTENT(IN   )  :: p                    !< p
+   TYPE(Aqwa_InputType),               INTENT(IN   )  :: u                    !< u
+   TYPE(Aqwa_OutputType),              INTENT(IN   )  :: y                    !< y
    INTEGER(IntKi),                     INTENT(  OUT)  :: ErrStat              !< returns a non-zero value when an error occurs
    CHARACTER(*),                       INTENT(  OUT)  :: ErrMsg               !< Error message if ErrStat /= ErrID_None
 
@@ -1979,7 +1979,7 @@ SUBROUTINE PointsForce_OutputWrite(ProgInfo, OutUnit, OutFileName, InputFileName
 
    IF ( AnglesInDegrees ) THEN
       CALL WrNumAryFileNR( OutUnit,   (/ REAL(Time, ReKi),                                                                    &
-                     u%PtfmMesh%TranslationDisp(1,1), u%PtfmMesh%TranslationDisp(2,1), u%PtfmMesh%TranslationDisp(3,1),       &
+                     REAL( u%PtfmMesh%TranslationDisp(1,1),ReKi), REAL( u%PtfmMesh%TranslationDisp(2,1),ReKi), REAL( u%PtfmMesh%TranslationDisp(3,1),ReKi),       &
                      rotdisp(1)*R2D,                  rotdisp(2)*R2D,                  rotdisp(3)*R2D,                        &
                      u%PtfmMesh%TranslationVel(1,1),  u%PtfmMesh%TranslationVel(2,1),  u%PtfmMesh%TranslationVel(3,1),        &
                      u%PtfmMesh%RotationVel(1,1)*R2D, u%PtfmMesh%RotationVel(2,1)*R2D, u%PtfmMesh%RotationVel(3,1)*R2D  /),   &
@@ -1988,7 +1988,7 @@ SUBROUTINE PointsForce_OutputWrite(ProgInfo, OutUnit, OutFileName, InputFileName
       WRITE (OutUnit,'(A)', IOSTAT=ErrStatTmp ) ''
    ELSE
       CALL WrNumAryFileNR( OutUnit,   (/ REAL(Time, ReKi),                                                                    &
-                     u%PtfmMesh%TranslationDisp(1,1), u%PtfmMesh%TranslationDisp(2,1), u%PtfmMesh%TranslationDisp(3,1),       &
+                     REAL(u%PtfmMesh%TranslationDisp(1,1),ReKi), REAL( u%PtfmMesh%TranslationDisp(2,1),ReKi), REAL( u%PtfmMesh%TranslationDisp(3,1),ReKi),       &
                      rotdisp(1),                      rotdisp(2),                      rotdisp(3),                            &
                      u%PtfmMesh%TranslationVel(1,1),  u%PtfmMesh%TranslationVel(2,1),  u%PtfmMesh%TranslationVel(3,1),        &
                      u%PtfmMesh%RotationVel(1,1),     u%PtfmMesh%RotationVel(2,1),     u%PtfmMesh%RotationVel(3,1)      /),   &
@@ -2007,12 +2007,12 @@ END SUBROUTINE PointsForce_OutputWrite
 !> This routine exists only to support the development of the module.  It will not be needed after the module is complete.
 SUBROUTINE  printSettings( DvrFlags, DvrSettings )
       ! The arguments
-   TYPE( OrcaDriver_Flags ),            INTENT(IN   )  :: DvrFlags           !< Flags indicating which settings were set
-   TYPE( OrcaDriver_Settings ),         INTENT(IN   )  :: DvrSettings        !< Stored settings
+   TYPE( AqwaDriver_Flags ),            INTENT(IN   )  :: DvrFlags           !< Flags indicating which settings were set
+   TYPE( AqwaDriver_Settings ),         INTENT(IN   )  :: DvrSettings        !< Stored settings
 
    CALL WrsCr(TRIM(GetNVD(DvrSettings%ProgInfo)))
    CALL WrScr(' DvrIptFile:          '//FLAG(DvrFlags%DvrIptFile)//        '      '//TRIM(DvrSettings%DvrIptFileName))
-   CALL WrScr(' OrcaIptFile:         '//FLAG(DvrFlags%OrcaIptFile)//       '      '//TRIM(DvrSettings%OrcaIptFileName))
+   CALL WrScr(' AqwaIptFile:         '//FLAG(DvrFlags%AqwaIptFile)//       '      '//TRIM(DvrSettings%AqwaIptFileName))
 !   CALL WrScr(' DLLPathFileName:     '//FLAG(DvrFlags%DLLPathFileName)//   '      '//TRIM(DvrSettings%DLLPathFileName))
    CALL WrScr(' PointsFile:          '//FLAG(DvrFlags%PointsFile)//        '      '//TRIM(DvrSettings%PointsFileName))
    CALL WrScr(' AddedMass:           '//FLAG(DvrFlags%AddedMass))
@@ -2086,4 +2086,4 @@ END FUNCTION FLAG
 !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-END MODULE OrcaDriver_Subs
+END MODULE AqwaDriver_Subs
